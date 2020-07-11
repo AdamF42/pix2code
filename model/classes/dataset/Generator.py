@@ -1,7 +1,6 @@
 from __future__ import print_function
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
-from model.classes.Utils import *
 from model.classes.dataset.Dataset import *
 from model.classes.Vocabulary import *
 from model.classes.model.Config import *
@@ -9,7 +8,8 @@ from model.classes.model.Config import *
 
 class Generator:
     @staticmethod
-    def data_generator(voc, gui_paths, img_paths, batch_size, generate_binary_sequences=False, verbose=False, loop_only_one=False):
+    def data_generator(voc, gui_paths, img_paths, batch_size, generate_binary_sequences=False,
+                       verbose=False, loop_only_one=False):
         assert len(gui_paths) == len(img_paths)
         voc.create_binary_representation()
 
@@ -47,6 +47,7 @@ class Generator:
                     batch_next_words.append(label)
                     sample_in_batch_counter += 1
 
+                    # TODO: Capire perchè ogni 64 cicli fa sta roba
                     if sample_in_batch_counter == batch_size or (loop_only_one and i == len(gui_paths) - 1):
                         if verbose:
                             print("Generating sparse vectors...")

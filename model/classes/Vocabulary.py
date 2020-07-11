@@ -12,8 +12,8 @@ SEPARATOR = '->'
 class Vocabulary:
     def __init__(self):
         self.binary_vocabulary = {}
-        self.vocabulary = {}
-        self.token_lookup = {}
+        self.vocabulary = {} # {'<START>': 0, '<END>': 1, ' ': 2, 'header': 3, . . . }
+        self.token_lookup = {} # {0: '<START>', 1: '<END>', 2: ' ', 3: 'header', . . . }
         self.size = 0
 
         self.append(START_TOKEN)
@@ -35,7 +35,6 @@ class Vocabulary:
             binary = np.zeros(self.size)
             binary[value] = 1
             self.binary_vocabulary[key] = binary
-
 
     def get_serialized_binary_representation(self):
         if len(self.binary_vocabulary) == 0:
