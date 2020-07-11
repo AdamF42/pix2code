@@ -1,11 +1,10 @@
 from __future__ import print_function
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
-import numpy as np
-
-from classes.dataset.Dataset import *
-from classes.Vocabulary import *
-from classes.model.Config import *
+from model.classes.Utils import *
+from model.classes.dataset.Dataset import *
+from model.classes.Vocabulary import *
+from model.classes.model.Config import *
 
 
 class Generator:

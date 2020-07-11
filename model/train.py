@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from __future__ import absolute_import
+
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import tensorflow.compat.v1 as tf
+
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
-import sys
-
-from classes.dataset.Generator import *
-from classes.model.pix2code import *
+from model.classes.dataset.Generator import *
+from model.classes.model.pix2code import *
 
 
 def run(input_path, output_path, is_memory_intensive=False, pretrained_model=None):
-    np.random.seed(1234)
+    #np.random.seed(1234)
 
     dataset = Dataset()
     dataset.load(input_path, generate_binary_sequences=True)
@@ -38,7 +38,8 @@ def run(input_path, output_path, is_memory_intensive=False, pretrained_model=Non
         voc = Vocabulary()
         voc.retrieve(output_path)
 
-        generator = Generator.data_generator(voc, gui_paths, img_paths, batch_size=BATCH_SIZE, generate_binary_sequences=True)
+        generator = Generator.data_generator(voc, gui_paths, img_paths, batch_size=BATCH_SIZE,
+                                             generate_binary_sequences=True)
 
     model = pix2code(input_shape, output_size, output_path)
 
@@ -49,6 +50,7 @@ def run(input_path, output_path, is_memory_intensive=False, pretrained_model=Non
         model.fit(dataset.input_images, dataset.partial_sequences, dataset.next_words)
     else:
         model.fit_generator(generator, steps_per_epoch=steps_per_epoch)
+
 
 if __name__ == "__main__":
     argv = sys.argv[1:]
