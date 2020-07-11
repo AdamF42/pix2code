@@ -3,9 +3,9 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import os
 
-from classes.Vocabulary import *
-from classes.Utils import *
-from classes.model.Config import *
+from model.classes.Vocabulary import *
+from model.classes.Utils import *
+from model.classes.model.Config import *
 
 
 class Dataset:

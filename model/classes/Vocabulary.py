@@ -36,6 +36,7 @@ class Vocabulary:
             binary[value] = 1
             self.binary_vocabulary[key] = binary
 
+
     def get_serialized_binary_representation(self):
         if len(self.binary_vocabulary) == 0:
             self.create_binary_representation()
