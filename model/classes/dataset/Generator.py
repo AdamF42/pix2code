@@ -47,7 +47,7 @@ class Generator:
                     batch_next_words.append(label)
                     sample_in_batch_counter += 1
 
-                    # TODO: Capire perchè ogni 64 cicli fa sta roba
+                    # TODO: Capire perchè ogni 64 cicli (batch_size) fa sta roba
                     if sample_in_batch_counter == batch_size or (loop_only_one and i == len(gui_paths) - 1):
                         if verbose:
                             print("Generating sparse vectors...")
@@ -59,9 +59,9 @@ class Generator:
 
                         if verbose:
                             print("Convert arrays...")
-                        batch_input_images = np.array(batch_input_images)
-                        batch_partial_sequences = np.array(batch_partial_sequences)
-                        batch_next_words = np.array(batch_next_words)
+                        batch_input_images = np.array(batch_input_images)  # ndarray -> shape (64, 256, 256, 3)
+                        batch_partial_sequences = np.array(batch_partial_sequences)  # ndarray -> shape (64, 48, 19)
+                        batch_next_words = np.array(batch_next_words)  # ndarray -> shape (64, 19)
 
                         if verbose:
                             print("Yield batch")
