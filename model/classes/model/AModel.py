@@ -2,6 +2,8 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 from keras.models import model_from_json
 
+from model.classes.TimeHistory import TimeHistory
+
 
 class AModel:
     def __init__(self, input_shape, output_size, output_path):
@@ -10,6 +12,7 @@ class AModel:
         self.output_size = output_size
         self.output_path = output_path
         self.name = ""
+        self.callback = TimeHistory()
 
     def save(self):
         model_json = self.model.to_json()
@@ -23,3 +26,6 @@ class AModel:
             loaded_model_json = json_file.read()
         self.model = model_from_json(loaded_model_json)
         self.model.load_weights("{}/{}.h5".format(self.output_path, output_name))
+
+    def get_time_history(self):
+        return self.callback.times

@@ -67,7 +67,7 @@ class pix2codegru(AModel):
 
 	def fit(self, images, partial_captions, next_words):
 		self.model.fit([images, partial_captions], next_words, shuffle=False, epochs=EPOCHS, batch_size=BATCH_SIZE,
-					   verbose=1)
+					   verbose=1, callbacks=self.callback)
 		self.save()
 
 	def fit_generator(self, generator, steps_per_epoch):

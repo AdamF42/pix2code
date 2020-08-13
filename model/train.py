@@ -57,6 +57,7 @@ def run(input_path, output_path, model_type, is_memory_intensive=False, pretrain
 	else:
 		model.fit_generator(generator, steps_per_epoch=steps_per_epoch)
 
+	model.get_time_history()
 
 if __name__ == "__main__":
 	argv = sys.argv[1:]
