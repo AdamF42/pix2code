@@ -13,7 +13,7 @@ from .AModel import *
 from .Config import *
 
 
-class pix2codeBiLSTM(AModel):
+class pix2code(AModel):
 	def __init__(self, input_shape, output_size, output_path):
 		AModel.__init__(self, input_shape, output_size, output_path)
 		self.name = "pix2code"
