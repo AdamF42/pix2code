@@ -6,6 +6,9 @@ from keras.layers import Input, Dense, Dropout, \
                          Conv2D, MaxPooling2D, Flatten
 from keras.models import Sequential, Model
 from keras.optimizers import RMSprop
+from keras.metrics import Accuracy
+from keras.layers import Bidirectional
+
 from keras import *
 from .Config import *
 from .AModel import *
@@ -44,22 +47,25 @@ class pix2code(AModel):
         encoded_image = image_model(visual_input)
 
         language_model = Sequential()
-        language_model.add(LSTM(128, return_sequences=True, input_shape=(CONTEXT_LENGTH, output_size)))
-        language_model.add(LSTM(128, return_sequences=True))
+        language_model.add(Bidirectional(LSTM(128, return_sequences=True, input_shape=(CONTEXT_LENGTH, output_size))))
+        language_model.add(Bidirectional(LSTM(128, return_sequences=True)))
 
         textual_input = Input(shape=(CONTEXT_LENGTH, output_size))
         encoded_text = language_model(textual_input)
 
+
         decoder = concatenate([encoded_image, encoded_text])
 
-        decoder = LSTM(512, return_sequences=True)(decoder)
-        decoder = LSTM(512, return_sequences=False)(decoder)
+        decoder = Bidirectional(LSTM(512, return_sequences=True))(decoder)
+        decoder = Bidirectional(LSTM(512, return_sequences=False))(decoder)
         decoder = Dense(output_size, activation='softmax')(decoder)
 
         self.model = Model(inputs=[visual_input, textual_input], outputs=decoder)
 
         optimizer = RMSprop(lr=0.0001, clipvalue=1.0)
-        self.model.compile(loss='categorical_crossentropy', optimizer=optimizer)
+        self.model.compile(loss='categorical_crossentropy',
+                           optimizer=optimizer,
+                           metrics=[Accuracy()])
 
     def fit(self, images, partial_captions, next_words):
         self.model.fit([images, partial_captions], next_words, shuffle=False, epochs=EPOCHS, batch_size=BATCH_SIZE, verbose=1)
