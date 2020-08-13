@@ -52,7 +52,6 @@ def run(input_path, output_path, is_memory_intensive=False, pretrained_model=Non
     else:
         model.fit_generator(generator, steps_per_epoch=steps_per_epoch, epochs=20)
 
-
 if __name__ == "__main__":
     argv = sys.argv[1:]
 
