@@ -2,7 +2,7 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 from keras.models import model_from_json
 
-from model.classes.TimeHistory import TimeHistory
+from classes.TimeHistory import TimeHistory
 
 
 class AModel:
