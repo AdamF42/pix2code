@@ -1,7 +1,6 @@
-from model.classes.model.pix2code import pix2code
-from model.classes.model.pix2codebilstm import pix2codeBiLSTM
-from model.classes.model.pix2codegru import pix2codegru
-
+from classes.model.pix2code import pix2code
+from classes.model.pix2codebilstm import pix2codeBiLSTM
+from classes.model.pix2codegru import pix2codegru
 
 class ModelFactory:
     @staticmethod

@@ -6,12 +6,12 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import tensorflow.compat.v1 as tf
 
-from model.classes.model.factory import ModelFactory
+from classes.model.factory import ModelFactory
 
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
-from model.classes.dataset.Generator import *
-from model.classes.model.pix2codebilstm import *
+from classes.dataset.Generator import *
+from classes.model.pix2codebilstm import *
 
 
 def run(input_path, output_path, model_type, is_memory_intensive=False, pretrained_model=None):
