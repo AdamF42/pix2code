@@ -9,6 +9,10 @@ import sys
 from classes.Sampler import *
 from classes.model.pix2code import *
 
+import numpy as np
+
+from classes.dataset.Dataset import Dataset
+
 argv = sys.argv[1:]
 
 if len(argv) < 4:
@@ -31,6 +35,15 @@ model.load(trained_model_name)
 
 sampler = Sampler(trained_weights_path, input_shape, output_size, CONTEXT_LENGTH)
 
+dataset = Dataset()
+dataset.load(input_path, generate_binary_sequences=True)
+
+model.compile()
+score, loss = model.minevaluate(dataset)
+print("accuracy: ", score)
+print("loss: ", loss)
+
+'''
 for f in os.listdir(input_path):
     if f.find(".png") != -1:
         evaluation_img = Utils.get_preprocessed_img("{}/{}".format(input_path, f), IMAGE_SIZE)
@@ -48,3 +61,4 @@ for f in os.listdir(input_path):
 
         with open("{}/{}.gui".format(output_path, file_name), 'w') as out_f:
             out_f.write(result.replace(START_TOKEN, "").replace(END_TOKEN, ""))
+'''
