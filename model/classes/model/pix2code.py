@@ -6,7 +6,6 @@ from keras import *
 from keras.layers import Dense, Dropout, \
 	RepeatVector, LSTM, concatenate, \
 	Conv2D, MaxPooling2D, Flatten
-from keras.metrics import Accuracy
 from keras.optimizers import RMSprop
 
 from .AModel import *
@@ -63,7 +62,8 @@ class pix2code(AModel):
 		optimizer = RMSprop(lr=0.0001, clipvalue=1.0)
 		self.model.compile(loss='categorical_crossentropy',
 						   optimizer=optimizer,
-						   metrics=[Accuracy()])
+						   # metrics=[Accuracy()],
+						   metrics=['categorical_accuracy'])
 
 	def fit(self, images, partial_captions, next_words):
 		self.model.fit([images, partial_captions], next_words, shuffle=False, epochs=EPOCHS, batch_size=BATCH_SIZE,
@@ -79,3 +79,4 @@ class pix2code(AModel):
 
 	def predict_batch(self, images, partial_captions):
 		return self.model.predict([images, partial_captions], verbose=1)
+
