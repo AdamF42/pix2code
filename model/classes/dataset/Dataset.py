@@ -7,6 +7,8 @@ from classes.Vocabulary import *
 from classes.Utils import *
 from classes.model.Config import *
 
+import numpy as np
+
 
 class Dataset:
     def __init__(self):
@@ -76,6 +78,18 @@ class Dataset:
 
         print("Input shape: {}".format(self.input_shape))
         print("Output size: {}".format(self.output_size))
+
+    def minconvert_arrays(self, index, size):
+        print("Convert arrays...")
+        if ((index + 1) * size < len(self.next_words)):
+            input_images = np.array(self.input_images[index * size:(index + 1) * size])
+            partial_sequences = np.array(self.partial_sequences[index * size:(index + 1) * size])
+            next_words = np.array(self.next_words[index * size:(index + 1) * size])
+        else:
+            input_images = np.array(self.input_images[index * size:-1])
+            partial_sequences = np.array(self.partial_sequences[index * size:-1])
+            next_words = np.array(self.next_words[index * size:-1])
+        return input_images, partial_sequences, next_words
 
     def convert_arrays(self):
         print("Convert arrays...")
