@@ -2,6 +2,8 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import sys
 import numpy as np
+import gensim
+from gensim.models import Word2Vec
 
 START_TOKEN = "<START>"
 END_TOKEN = "<END>"
@@ -35,6 +37,25 @@ class Vocabulary:
             binary = np.zeros(self.size)
             binary[value] = 1
             self.binary_vocabulary[key] = binary
+
+    def create_word2vec_representation(self):
+        items = self.vocabulary.items()
+        data = []
+        for key, value in items:
+            data.append(value)
+
+        model1 = gensim.models.Word2Vec(data, min_count=1,
+                                        size=10, window=5)
+
+        for key, value in model1.vocabulary:
+            print("key: ", key)
+            print("value: ", value)
+            # binary = np.zeros(self.size)
+            # binary[value] = 1
+            self.binary_vocabulary[key] = value
+
+
+
 
     def get_serialized_binary_representation(self):
         if len(self.binary_vocabulary) == 0:
