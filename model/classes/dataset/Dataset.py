@@ -59,7 +59,8 @@ class Dataset:
                     self.append(file_name, gui, img)
 
         print("Generating sparse vectors...")
-        self.voc.create_binary_representation()
+        # self.voc.create_binary_representation()
+        self.voc.create_word2vec_representation()
         self.next_words = self.sparsify_labels(self.next_words, self.voc)
         if generate_binary_sequences:
             self.partial_sequences = self.binarize(self.partial_sequences, self.voc)
