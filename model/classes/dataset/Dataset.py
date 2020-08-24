@@ -1,13 +1,14 @@
 from __future__ import print_function
+
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import os
 
-from classes.Vocabulary import *
-from classes.Utils import *
-from classes.model.Config import *
-
 import numpy as np
+
+from classes.Utils import *
+from classes.Vocabulary import *
+from classes.model.Config import *
 
 
 class Dataset:
@@ -22,6 +23,7 @@ class Dataset:
 
         self.voc = Vocabulary()
         self.size = 0
+        self.data = []
 
     @staticmethod
     def load_paths_only(path):
@@ -44,7 +46,19 @@ class Dataset:
         assert len(gui_paths) == len(img_paths)
         return gui_paths, img_paths
 
-    def load(self, path, generate_binary_sequences=False):
+    def load_with_one_hot_encoding(self, path, generate_binary_sequences=False):
+        self.load(path)
+        print("Generating sparse vectors...")
+        self.voc.create_binary_representation()
+        self.create_labeling(generate_binary_sequences)
+
+    def load_with_word2vec(self, path, generate_binary_sequences=False):
+        self.load(path)
+        print("Generating sparse vectors...")
+        self.create_word2vec_representation()
+        self.create_labeling(generate_binary_sequences)
+
+    def load(self, path):
         print("Loading data...")
         for f in os.listdir(path):
             if f.find(".gui") != -1:
@@ -58,27 +72,31 @@ class Dataset:
                     img = np.load("{}/{}.npz".format(path, file_name))["features"]
                     self.append(file_name, gui, img)
 
-        print("Generating sparse vectors...")
-        # self.voc.create_binary_representation()
-        self.voc.create_word2vec_representation()
+    def create_labeling(self, generate_binary_sequences):
         self.next_words = self.sparsify_labels(self.next_words, self.voc)
         if generate_binary_sequences:
             self.partial_sequences = self.binarize(self.partial_sequences, self.voc)
         else:
             self.partial_sequences = self.indexify(self.partial_sequences, self.voc)
-
         self.size = len(self.ids)
         assert self.size == len(self.input_images) == len(self.partial_sequences) == len(self.next_words)
         assert self.voc.size == len(self.voc.vocabulary)
-
         print("Dataset size: {}".format(self.size))
         print("Vocabulary size: {}".format(self.voc.size))
-
         self.input_shape = self.input_images[0].shape
         self.output_size = self.voc.size
-
         print("Input shape: {}".format(self.input_shape))
         print("Output size: {}".format(self.output_size))
+
+    def create_word2vec_representation(self):
+        model1 = gensim.models.Word2Vec([self.voc.vocabulary], min_count=1,
+                                        size=30, window=3)
+
+        model1.train(self.data, total_examples=1, epochs=10)
+
+        for token in self.voc.vocabulary:
+            vector = model1.wv[token]
+            self.voc.binary_vocabulary[token] = vector
 
     def minconvert_arrays(self, index, size):
         print("Convert arrays...")
@@ -113,11 +131,13 @@ class Dataset:
                 token_sequence.append(token)
         token_sequence.append(END_TOKEN)
 
+        self.data.append(token_sequence)
+
         suffix = [PLACEHOLDER] * CONTEXT_LENGTH
 
         a = np.concatenate([suffix, token_sequence])
         for j in range(0, len(a) - CONTEXT_LENGTH):
-            #TODO: come viene usato context
+            # TODO: come viene usato context
             context = a[j:j + CONTEXT_LENGTH]
             label = a[j + CONTEXT_LENGTH]
 
