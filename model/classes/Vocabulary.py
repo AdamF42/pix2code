@@ -35,7 +35,7 @@ class Vocabulary:
             items = self.vocabulary.iteritems()
         for key, value in items:
             binary = np.zeros(self.size)
-            binary[value] = 1
+            binary[np.where(value == 1)] = 1
             self.binary_vocabulary[key] = binary
 
     def get_serialized_binary_representation(self):
@@ -70,8 +70,8 @@ class Vocabulary:
                 value = np.fromstring(value, sep=',')
 
                 self.binary_vocabulary[key] = value
-                self.vocabulary[key] = np.where(value == 1)[0][0]
-                self.token_lookup[np.where(value == 1)[0][0]] = key
+                self.vocabulary[key] = value # np.where(value == 1)[0][0]
+                # self.token_lookup[np.where(value == 1)[0][0]] = key
 
                 buffer = ""
             except ValueError:

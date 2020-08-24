@@ -22,7 +22,8 @@ def run(input_path, output_path, model_type, encoding_type, is_memory_intensive=
         dataset.load_with_one_hot_encoding(input_path, generate_binary_sequences=True)
     elif encoding_type == "w2v":
         dataset.load_with_word2vec(input_path, generate_binary_sequences=True)
-    else: raise Exception("Missing parameter")
+    else:
+        raise Exception("Missing parameter")
     dataset.save_metadata(output_path)
     dataset.voc.save(output_path)
 
@@ -44,8 +45,7 @@ def run(input_path, output_path, model_type, encoding_type, is_memory_intensive=
         voc = Vocabulary()
         voc.retrieve(output_path)
 
-        generator = Generator.data_generator(voc, gui_paths, img_paths, batch_size=BATCH_SIZE,
-                                             generate_binary_sequences=True)
+        generator = get_generator(dataset, encoding_type, gui_paths, img_paths, voc)
 
     model = ModelFactory.create_model(model_type, input_shape, output_size, output_path)
     model.model.summary()
@@ -58,6 +58,20 @@ def run(input_path, output_path, model_type, encoding_type, is_memory_intensive=
         model.fit(dataset.input_images, dataset.partial_sequences, dataset.next_words)
     else:
         model.fit_generator(generator, steps_per_epoch=steps_per_epoch, epochs=20)
+
+    model.get_time_history()
+
+
+def get_generator(dataset, encoding_type, gui_paths, img_paths, voc):
+    if encoding_type == "one_hot":
+        return Generator.data_generator_one_hot(voc, gui_paths, img_paths, batch_size=BATCH_SIZE,
+                                                generate_binary_sequences=True)
+    elif encoding_type == "w2v":
+        return Generator.data_generator_w2v(voc, dataset, gui_paths, img_paths, batch_size=BATCH_SIZE,
+                                            generate_binary_sequences=True)
+    else:
+        raise Exception("Missing parameter")
+
 
 if __name__ == "__main__":
     argv = sys.argv[1:]
@@ -75,4 +89,5 @@ if __name__ == "__main__":
         use_generator = False if len(argv) < 5 else True if int(argv[4]) == 1 else False
         pretrained_weigths = None if len(argv) < 6 else argv[5]
 
-    run(input_path, output_path, model_type, encoding_type, is_memory_intensive=use_generator, pretrained_model=pretrained_weigths)
+    run(input_path, output_path, model_type, encoding_type, is_memory_intensive=use_generator,
+        pretrained_model=pretrained_weigths)
