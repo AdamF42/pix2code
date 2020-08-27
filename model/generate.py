@@ -15,16 +15,17 @@ from classes.dataset.Dataset import Dataset
 
 argv = sys.argv[1:]
 
-if len(argv) < 4:
+if len(argv) < 5:
     print("Error: not enough argument supplied:")
-    print("generate.py <trained weights path> <trained model name> <input image> <output path> <search method (default: greedy)>")
+    print("generate.py <trained weights path> <trained model name> <input image> <output path> <encoding_type> <search method (default: greedy)>")
     exit(0)
 else:
     trained_weights_path = argv[0]
     trained_model_name = argv[1]
     input_path = argv[2]
     output_path = argv[3]
-    search_method = "greedy" if len(argv) < 5 else argv[4]
+    encoding_type = argv[4]
+    search_method = "greedy" if len(argv) < 6 else argv[5]
 
 meta_dataset = np.load("{}/meta_dataset.npy".format(trained_weights_path), allow_pickle=True)
 input_shape = meta_dataset[0]
@@ -36,7 +37,15 @@ model.load(trained_model_name)
 sampler = Sampler(trained_weights_path, input_shape, output_size, CONTEXT_LENGTH)
 
 dataset = Dataset()
-dataset.load(input_path, generate_binary_sequences=True)
+if encoding_type == "one_hot":
+    dataset.load_with_one_hot_encoding(input_path, generate_binary_sequences=True)
+elif encoding_type == "w2v":
+    dataset.load_with_word2vec(input_path, generate_binary_sequences=True)
+else:
+    raise Exception("Missing parameter")
+
+# dataset = Dataset()
+# dataset.load(input_path))
 
 model.compile()
 score, loss = model.minevaluate(dataset)
