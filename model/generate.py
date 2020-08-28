@@ -31,18 +31,18 @@ meta_dataset = np.load("{}/meta_dataset.npy".format(trained_weights_path), allow
 input_shape = meta_dataset[0]
 output_size = meta_dataset[1]
 
-model = pix2code(input_shape, output_size, trained_weights_path)
+model = pix2code(input_shape, output_size, trained_weights_path, encoding_type)
 model.load(trained_model_name)
 
 sampler = Sampler(trained_weights_path, input_shape, output_size, CONTEXT_LENGTH)
 
-dataset = Dataset()
-if encoding_type == "one_hot":
-    dataset.load_with_one_hot_encoding(input_path, generate_binary_sequences=True)
-elif encoding_type == "w2v":
-    dataset.load_with_word2vec(input_path, generate_binary_sequences=True)
-else:
-    raise Exception("Missing parameter")
+# dataset = Dataset()
+# if encoding_type == "one_hot":
+#     dataset.load_with_one_hot_encoding(input_path, generate_binary_sequences=True)
+# elif encoding_type == "w2v":
+#     dataset.load_with_word2vec(input_path, generate_binary_sequences=True)
+# else:
+#     raise Exception("Missing parameter")
 
 # dataset = Dataset()
 # dataset.load(input_path))

@@ -31,29 +31,28 @@ class Sampler:
         out_probas = []
 
         for i in range(0, sequence_length):
-            print("cc: ", current_context)
             if verbose:
                 print("predicting {}/{}...".format(i, sequence_length))
             probas = model.predict(input_img, np.array([current_context]))
-            print("probas: ", probas)
             prediction = np.argmax(probas)
-            print("prediction: ", prediction)
             out_probas.append(probas)
 
             new_context = []
             for j in range(1, self.context_length):
                 new_context.append(current_context[j])
 
-            if require_sparse_label:
-                sparse_label = np.zeros(self.output_size)
-                sparse_label[prediction] = 1
-                new_context.append(sparse_label)
-            else:
-                new_context.append(prediction)
+            # if require_sparse_label:
+            token = self.voc.token_lookup[prediction]
+            sparse_label = self.voc.binary_vocabulary[token]
+            # sparse_label = np.zeros(self.output_size)
+            # sparse_label[prediction] = 1
+            new_context.append(sparse_label)
+            # else:
+            #     new_context.append(prediction)
 
             current_context = new_context
 
-            predictions += self.voc.token_lookup[prediction]
+            predictions += token
 
             if self.voc.token_lookup[prediction] == END_TOKEN:
                 break
