@@ -35,12 +35,13 @@ class Vocabulary:
             items = self.vocabulary.iteritems()
         for key, value in items:
             binary = np.zeros(self.size)
-            binary[np.where(value == 1)] = 1
+            binary[value] = 1
             self.binary_vocabulary[key] = binary
 
     def get_serialized_binary_representation(self):
-        if len(self.binary_vocabulary) == 0:
-            self.create_binary_representation()
+        # TODO: create two Voc classes: one for w2c and one for one_hot
+        # if len(self.binary_vocabulary) == 0:
+        #     self.create_binary_representation()
 
         string = ""
         if sys.version_info >= (3,):

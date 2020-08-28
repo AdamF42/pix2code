@@ -21,7 +21,7 @@ class Generator:
     def data_generator_one_hot(voc, gui_paths, img_paths, batch_size, generate_binary_sequences=False,
                                verbose=False, loop_only_one=False):
         assert len(gui_paths) == len(img_paths)
-        voc.create_binary_representation()
+        # voc.create_binary_representation()
         return Generator.data_generator(voc, gui_paths, img_paths, batch_size, generate_binary_sequences, verbose,
                                  loop_only_one)
 

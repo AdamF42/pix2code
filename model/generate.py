@@ -62,7 +62,7 @@ for f in os.listdir(input_path):
         file_name = f[:f.find(".png")]
 
         if search_method == "greedy":
-            result, _ = sampler.predict_greedy(model, np.array([evaluation_img]))
+            result, _ = sampler.predict_greedy(model, np.array([evaluation_img]), require_sparse_label=False)
             print("Result greedy: {}".format(result))
         else:
             beam_width = int(search_method)
