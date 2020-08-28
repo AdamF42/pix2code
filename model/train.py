@@ -47,7 +47,7 @@ def run(input_path, output_path, model_type, encoding_type, is_memory_intensive=
 
         generator = get_generator(dataset, encoding_type, gui_paths, img_paths, voc)
 
-    model = ModelFactory.create_model(model_type, input_shape, output_size, output_path)
+    model = ModelFactory.create_model(model_type, input_shape, output_size, output_path, encoding_type)
     model.model.summary()
     #    tf.keras.utils.plot_model(model, to_file="dot_img_file.png", show_shapes=True)
 

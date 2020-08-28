@@ -13,8 +13,8 @@ from .Config import *
 
 
 class pix2code(AModel):
-	def __init__(self, input_shape, output_size, output_path):
-		AModel.__init__(self, input_shape, output_size, output_path)
+	def __init__(self, input_shape, output_size, output_path, encoding_type):
+		AModel.__init__(self, input_shape, output_size, output_path, encoding_type)
 		self.name = "pix2code"
 
 		image_model = Sequential()
@@ -71,7 +71,7 @@ class pix2code(AModel):
 		self.save()
 
 	def fit_generator(self, generator, steps_per_epoch):
-		self.model.fit_generator(generator, steps_per_epoch=steps_per_epoch, epochs=EPOCHS, verbose=1)
+		self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=EPOCHS, verbose=1)
 		self.save()
 
     def fit_generator(self, generator, steps_per_epoch, epochs=EPOCHS):

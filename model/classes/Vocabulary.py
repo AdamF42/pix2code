@@ -51,7 +51,7 @@ class Vocabulary:
         for key, value in items:
             array_as_string = np.array2string(value, separator=',', max_line_width=self.size * self.size)
             string += "{}{}{}\n".format(key, SEPARATOR, array_as_string[1:len(array_as_string) - 1])
-        return string
+        return string  # \n->[codifica]\n
 
     def save(self, path):
         output_file_name = "{}/words.vocab".format(path)
@@ -62,6 +62,7 @@ class Vocabulary:
     def retrieve(self, path):
         input_file = open("{}/words.vocab".format(path), 'r')
         buffer = ""
+        index = 0
         for line in input_file:
             try:
                 separator_position = len(buffer) + line.index(SEPARATOR)
@@ -71,10 +72,11 @@ class Vocabulary:
                 value = np.fromstring(value, sep=',')
 
                 self.binary_vocabulary[key] = value
-                self.vocabulary[key] = value # np.where(value == 1)[0][0]
-                # self.token_lookup[np.where(value == 1)[0][0]] = key
+                self.vocabulary[key] = value  # np.where(value == 1)[0][0]
+                self.token_lookup[index] = key
 
                 buffer = ""
+                index += 1
             except ValueError:
                 buffer += line
         input_file.close()
