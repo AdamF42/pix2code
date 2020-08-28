@@ -47,12 +47,14 @@ else:
 # dataset = Dataset()
 # dataset.load(input_path))
 
+''' Metodo di valutazione cinese
 model.compile()
 score, loss = model.minevaluate(dataset)
 print("accuracy: ", score)
 print("loss: ", loss)
-
 '''
+
+# Metodo di valutazione Tony
 for f in os.listdir(input_path):
     if f.find(".png") != -1:
         evaluation_img = Utils.get_preprocessed_img("{}/{}".format(input_path, f), IMAGE_SIZE)
@@ -70,4 +72,3 @@ for f in os.listdir(input_path):
 
         with open("{}/{}.gui".format(output_path, file_name), 'w') as out_f:
             out_f.write(result.replace(START_TOKEN, "").replace(END_TOKEN, ""))
-'''
