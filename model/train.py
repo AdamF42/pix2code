@@ -59,7 +59,7 @@ def run(input_path, output_path, model_type, encoding_type, is_memory_intensive=
     else:
         model.fit_generator(generator, steps_per_epoch=steps_per_epoch)
 
-    # model.get_time_history() TODO: fix me
+    model.get_time_history()
 
 
 def get_generator(dataset, encoding_type, gui_paths, img_paths, voc):

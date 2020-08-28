@@ -16,7 +16,7 @@ from .Config import *
 class pix2codegru(AModel):
 	def __init__(self, input_shape, output_size, output_path):
 		AModel.__init__(self, input_shape, output_size, output_path)
-		self.name = "pix2code"
+		self.name = "pix2codegru"
 
 		image_model = Sequential()
 		image_model.add(Conv2D(32, (3, 3), padding='valid', activation='relu', input_shape=input_shape))
