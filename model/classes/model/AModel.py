@@ -51,4 +51,4 @@ class AModel:
     def compile(self):
         optimizer = RMSprop(lr=0.0002, clipvalue=1.0)
         # optimizer = Adam(lr=0.002, beta_1=0.9, beta_2=0.999)
-        self.model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        self.model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['categorical_accuracy'])
