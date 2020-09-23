@@ -54,7 +54,7 @@ class Dataset:
 
     def load_with_word2vec(self, path, generate_binary_sequences=False):
         self.load(path)
-        print("Generating sparse vectors...")
+        print("Generating sparse vectors w2v...")
         self.create_word2vec_representation()
         self.create_labeling(generate_binary_sequences)
 
@@ -89,6 +89,7 @@ class Dataset:
         print("Output size: {}".format(self.output_size))
 
     def create_word2vec_representation(self):
+        print("Creating w2c representation...")
         model1 = gensim.models.Word2Vec([self.voc.vocabulary], min_count=1,
                                         size=19, window=3)
 
@@ -111,7 +112,7 @@ class Dataset:
         return input_images, partial_sequences, next_words
 
     def convert_arrays(self):
-        print("Convert arrays...")
+        print("Convert arrays into np.array...")
         self.input_images = np.array(self.input_images)
         self.partial_sequences = np.array(self.partial_sequences)
         self.next_words = np.array(self.next_words)
@@ -166,7 +167,7 @@ class Dataset:
                 sparse_vectors_sequence.append(voc.binary_vocabulary[token])
             temp.append(np.array(sparse_vectors_sequence))
 
-        return temp
+        return temp  # (48, 19)
 
     @staticmethod
     def sparsify_labels(next_words, voc):

@@ -159,3 +159,6 @@ datasets/*
 
 # Training output
 bin/
+
+# generated .gui
+code/*.gui
