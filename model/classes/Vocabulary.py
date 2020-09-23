@@ -14,8 +14,9 @@ SEPARATOR = '->'
 class Vocabulary:
     def __init__(self):
         self.binary_vocabulary = {}
-        self.vocabulary = {} # {'<START>': 0, '<END>': 1, ' ': 2, 'header': 3, . . . }
-        self.token_lookup = {} # {0: '<START>', 1: '<END>', 2: ' ', 3: 'header', . . . }
+        self.vocabulary = {}  # {'<START>': 0, '<END>': 1, ' ': 2, 'header': 3, . . . }
+        self.token_lookup = {}  # {0: '<START>', 1: '<END>', 2: ' ', 3: 'header', . . . }
+        self.inv_token_lookup = {}  # {'<START>': 0, '<END>': 1, ' ': 2, 'header': 3, '{': 4 . . .
         self.size = 0
 
         self.append(START_TOKEN)
@@ -74,6 +75,7 @@ class Vocabulary:
                 self.binary_vocabulary[key] = value
                 self.vocabulary[key] = value  # np.where(value == 1)[0][0]
                 self.token_lookup[index] = key
+                self.inv_token_lookup = {v: k for k, v in self.token_lookup.items()}
 
                 buffer = ""
                 index += 1

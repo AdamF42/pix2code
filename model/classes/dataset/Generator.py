@@ -55,22 +55,27 @@ class Generator:
                 a = np.concatenate([suffix, token_sequence])
                 for j in range(0, len(a) - CONTEXT_LENGTH):
                     context = a[j:j + CONTEXT_LENGTH]
-                    label = a[j + CONTEXT_LENGTH]
+                    label = a[j + CONTEXT_LENGTH]  # label = name
 
                     batch_input_images.append(img)
                     batch_partial_sequences.append(context)
-                    batch_next_words.append(label)
+
+                    one_hot_encoding = np.zeros(voc.size)
+                    one_hot_encoding[voc.inv_token_lookup[label]] = 1
+
+                    batch_next_words.append(one_hot_encoding)
                     sample_in_batch_counter += 1
 
                     # TODO: Capire perchè ogni 64 cicli (batch_size) fa sta roba
                     if sample_in_batch_counter == batch_size or (loop_only_one and i == len(gui_paths) - 1):
                         if verbose:
                             print("Generating sparse vectors...")
-                        batch_next_words = Dataset.sparsify_labels(batch_next_words, voc)
+
+                        # batch_next_words = Dataset.sparsify_labels(batch_next_words, voc)  # codifica w2v/one_hot del words.vocab
                         if generate_binary_sequences:
                             batch_partial_sequences = Dataset.binarize(batch_partial_sequences, voc)
                         else:
-                            batch_partial_sequences = Dataset.indexify(batch_partial_sequences, voc)
+                            batch_partial_sequences = Dataset.indexify(batch_partial_sequences, voc)  # 64 ndarray di 48 x 19 contenenti la codifica del words.vocab
 
                         if verbose:
                             print("Convert arrays...")
