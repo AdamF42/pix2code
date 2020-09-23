@@ -27,6 +27,19 @@ else:
     encoding_type = argv[4]
     search_method = "greedy" if len(argv) < 6 else argv[5]
 
+
+def calculate_accuracy():
+    correct = 0
+    wrong = 0
+    for i in range(0, len(predictions)):
+        if np.argmax(predictions[i]) == np.argmax(dataset.next_words[i]):
+            correct += 1
+        else:
+            wrong += 1
+
+    accuracy = ((correct * 100) / float(correct + wrong))
+    print(accuracy)
+
 meta_dataset = np.load("{}/meta_dataset.npy".format(trained_weights_path), allow_pickle=True)
 input_shape = meta_dataset[0]
 output_size = meta_dataset[1]

@@ -5,6 +5,10 @@ from keras.models import model_from_json
 from classes.TimeHistory import TimeHistory
 from keras.optimizers import RMSprop
 
+from model.classes.Vocabulary import Vocabulary
+from model.classes.dataset.Dataset import Dataset
+from model.classes.dataset.Generator import Generator
+
 
 class AModel:
     def __init__(self, input_shape, output_size, output_path, encoding_type):
@@ -32,15 +36,30 @@ class AModel:
     def get_time_history(self):  # TODO: fix time
         return self.callback.times
 
-    def minevaluate(self, dataset):
+    def minevaluate(self, dataset):  # metodo cinese pt2
+        '''
+        if np.argmax(predictions[i]) == np.argmax(dataset.next_words[i]):
+            correct += 1
+        else:
+            wrong += 1
+
+            accuracy = ((correct * 100) / float(correct + wrong))
+            print(accuracy)
+        '''
         dataleng = len(dataset.input_images)
         batch_size = 2048
         step = dataleng // batch_size + 1
         sumscore = 0.0
         sumloss = 0.0
         for i in range(step):
-            images, partial_captions, next_words = dataset.minconvert_arrays(i, batch_size)
-            loss, score = self.model.evaluate([images, partial_captions], next_words, batch_size=64)
+            # images, partial_captions, next_words = dataset.minconvert_arrays(i, batch_size)
+            # loss, score = self.model.evaluate([images, partial_captions], next_words, batch_size=64)
+            voc = Vocabulary()
+            voc.retrieve("../bin")
+            gui_paths, img_paths = Dataset.load_paths_only("../datasets/web/eval_set")
+            generator = Generator.data_generator_one_hot(voc, gui_paths, img_paths, batch_size=64,
+                                                generate_binary_sequences=True)
+            loss, score = self.model.evaluate(generator)
             sumscore = sumscore + score
             sumloss = sumloss + loss
             print("loss:", loss, "accuracy:", score)
