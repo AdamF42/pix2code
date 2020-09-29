@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import sys
@@ -10,6 +11,7 @@ from classes.dataset.Generator import *
 from classes.model.pix2code import *
 
 argv = sys.argv[1:]
+
 
 if len(argv) < 2:
     print("Error: not enough argument supplied:")
@@ -24,7 +26,6 @@ else:
     print(trained_model_name)
     print(input_path)
 
-
 meta_dataset = np.load("{}/meta_dataset.npy".format(trained_weights_path), allow_pickle=True)
 input_shape = meta_dataset[0]
 output_size = meta_dataset[1]
@@ -32,7 +33,7 @@ model = pix2code(input_shape, output_size, trained_weights_path, encoding_type="
 model.load(trained_model_name)
 
 dataset = Dataset()
-dataset.load(input_path) #generate_binary_sequences=True)
+dataset.load(input_path)  # generate_binary_sequences=True)
 
 voc = Vocabulary()
 voc.retrieve(path="../bin")
