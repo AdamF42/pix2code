@@ -99,18 +99,6 @@ class Dataset:
             vector = model1.wv[token]
             self.voc.binary_vocabulary[token] = vector
 
-    def minconvert_arrays(self, index, size):
-        print("Convert arrays...")
-        if ((index + 1) * size < len(self.next_words)):
-            input_images = np.array(self.input_images[index * size:(index + 1) * size])
-            partial_sequences = np.array(self.partial_sequences[index * size:(index + 1) * size])
-            next_words = np.array(self.next_words[index * size:(index + 1) * size])
-        else:
-            input_images = np.array(self.input_images[index * size:-1])
-            partial_sequences = np.array(self.partial_sequences[index * size:-1])
-            next_words = np.array(self.next_words[index * size:-1])
-        return input_images, partial_sequences, next_words
-
     def convert_arrays(self):
         print("Convert arrays into np.array...")
         self.input_images = np.array(self.input_images)
@@ -131,17 +119,15 @@ class Dataset:
                 self.voc.append(token)
                 token_sequence.append(token)
         token_sequence.append(END_TOKEN)
-
+        # Insieme dei token che servono per word2vec
         self.data.append(token_sequence)
 
         suffix = [PLACEHOLDER] * CONTEXT_LENGTH
 
         a = np.concatenate([suffix, token_sequence])
         for j in range(0, len(a) - CONTEXT_LENGTH):
-            # TODO: come viene usato context
             context = a[j:j + CONTEXT_LENGTH]
             label = a[j + CONTEXT_LENGTH]
-
             self.ids.append(sample_id)
             self.input_images.append(img)
             self.partial_sequences.append(context)
