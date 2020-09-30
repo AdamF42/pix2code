@@ -8,8 +8,8 @@ import tensorflow.compat.v1 as tf
 
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
-from model.classes.dataset.Generator import *
-from model.classes.model.pix2code import *
+from classes.dataset.Generator import *
+from classes.model.pix2code import *
 
 
 def run(input_path, output_path, is_memory_intensive=False, pretrained_model=None):
@@ -42,15 +42,15 @@ def run(input_path, output_path, is_memory_intensive=False, pretrained_model=Non
                                              generate_binary_sequences=True)
 
     model = pix2code(input_shape, output_size, output_path)
-    tf.keras.utils.plot_model(model, to_file="dot_img_file.png", show_shapes=True)
+    # tf.keras.utils.plot_model(model, to_file="dot_img_file.png", show_shapes=True)
 
-    # if pretrained_model is not None:
-    #     model.model.load_weights(pretrained_model)
-    #
-    # if not is_memory_intensive:
-    #     model.fit(dataset.input_images, dataset.partial_sequences, dataset.next_words)
-    # else:
-    #     model.fit_generator(generator, steps_per_epoch=steps_per_epoch)
+    if pretrained_model is not None:
+        model.model.load_weights(pretrained_model)
+
+    if not is_memory_intensive:
+        model.fit(dataset.input_images, dataset.partial_sequences, dataset.next_words)
+    else:
+        model.fit_generator(generator, steps_per_epoch=steps_per_epoch)
 
 
 if __name__ == "__main__":
