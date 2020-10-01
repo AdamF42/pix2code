@@ -67,8 +67,9 @@ def predict_greedy(model, input_img, tokens, require_sparse_label=True, sequence
     predictions = START_TOKEN
     out_probas = []
 
-    score = 0
+    errors = 0
     total = len(tokens)
+    predicted_tokens = []
 
     for i in range(0, sequence_length):
         probas = model.predict(input_img, np.array([current_context]))
@@ -80,8 +81,11 @@ def predict_greedy(model, input_img, tokens, require_sparse_label=True, sequence
             new_context.append(current_context[j])
 
         token = voc.token_lookup[prediction]
-        if token == tokens[i]:
-            score += 1
+        # print("sequence_length[{}]".format(i))
+        # print("predicted: {} - label: {}".format(token, tokens[i]))
+
+        predicted_tokens.append(token)
+
         sparse_label = voc.binary_vocabulary[token]
         new_context.append(sparse_label)
 
@@ -91,14 +95,24 @@ def predict_greedy(model, input_img, tokens, require_sparse_label=True, sequence
         if voc.token_lookup[prediction] == END_TOKEN:
             break
 
-    return predictions, out_probas, score / total * 100
+    if len(tokens) != len(predicted_tokens):
+        errors += abs(len(predicted_tokens) - len(tokens))
+        total += abs(len(predicted_tokens) - len(tokens))
+
+    for i in range(0, min(len(tokens), len(predicted_tokens))):
+        if predicted_tokens[i] != tokens[i]:
+            errors += 1
+
+    return predictions, out_probas, errors / total * 100
 
 
 total_score = 0
 for i in img_paths:
     gui = i.replace('png', 'gui')
     evaluation_img, tokens = get_eval_img(i, gui)
+    print(gui)
     _, _, result = predict_greedy(model, np.array([evaluation_img]), tokens[1:-1])
+    print(result)
     total_score += result
 
 print("Tony accuracy: ", total_score / len(img_paths))
