@@ -29,8 +29,11 @@ else:
 meta_dataset = np.load("{}/meta_dataset.npy".format(trained_weights_path), allow_pickle=True)
 input_shape = meta_dataset[0]
 output_size = meta_dataset[1]
+
 model = pix2code(input_shape, output_size, trained_weights_path)
 model.load(trained_model_name)
+
+sampler = Sampler(trained_weights_path, input_shape, output_size, CONTEXT_LENGTH)
 
 dataset = Dataset()
 dataset.load(input_path)  # generate_binary_sequences=True)
@@ -38,7 +41,6 @@ dataset.load(input_path)  # generate_binary_sequences=True)
 
 voc = Vocabulary()
 voc.retrieve(path="../bin")
-sampler = Sampler(trained_weights_path, input_shape, output_size, CONTEXT_LENGTH)
 
 gui_paths, img_paths = Dataset.load_paths_only(input_path)
 
@@ -96,7 +98,7 @@ total_score = 0
 for i in img_paths:
     gui = i.replace('png', 'gui')
     evaluation_img, tokens = get_eval_img(i, gui)
-    _, _, result = predict_greedy(model, np.array([evaluation_img]), tokens[1:-1], require_sparse_label=False)
+    _, _, result = predict_greedy(model, np.array([evaluation_img]), tokens[1:-1])
     total_score += result
 
 print("Tony accuracy: ", total_score / len(img_paths))
