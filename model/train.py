@@ -50,7 +50,7 @@ def run(input_path, output_path, is_memory_intensive=False, pretrained_model=Non
     if not is_memory_intensive:
         model.fit(dataset.input_images, dataset.partial_sequences, dataset.next_words)
     else:
-        model.fit_generator(generator, steps_per_epoch=steps_per_epoch)
+        model.fit_generator(generator, steps_per_epoch=steps_per_epoch, epochs=20)
 
 
 if __name__ == "__main__":
