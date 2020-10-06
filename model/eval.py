@@ -12,7 +12,6 @@ from classes.model.pix2code import *
 
 argv = sys.argv[1:]
 
-
 if len(argv) < 2:
     print("Error: not enough argument supplied:")
     print(
@@ -54,14 +53,10 @@ def get_eval_img(img_path, gui_path):
     return evaluation_img, token_sequence
 
 
-def predict_greedy(model, input_img, require_sparse_label=True, sequence_length=150):
+def predict_greedy(model, input_img, sequence_length=150):
     current_context = [voc.vocabulary[PLACEHOLDER]] * (CONTEXT_LENGTH - 1)
     current_context.append(voc.vocabulary[START_TOKEN])
-    if require_sparse_label:
-        current_context = Utils.sparsify(current_context, output_size)
-
     predictions = START_TOKEN
-
     predicted_tokens = []
 
     for i in range(0, sequence_length):
