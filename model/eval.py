@@ -5,7 +5,6 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 import sys
 
 from classes.BeamSearch import *
-from classes.Sampler import *
 from classes.Utils import *
 from classes.Vocabulary import *
 from classes.dataset.Generator import *
@@ -33,8 +32,6 @@ output_size = meta_dataset[1]
 model = pix2code(input_shape, output_size, trained_weights_path)
 model.load(trained_model_name)
 
-sampler = Sampler(trained_weights_path, input_shape, output_size, CONTEXT_LENGTH)
-
 dataset = Dataset()
 dataset.load(input_path)  # generate_binary_sequences=True)
 
@@ -57,24 +54,19 @@ def get_eval_img(img_path, gui_path):
     return evaluation_img, token_sequence
 
 
-def predict_greedy(model, input_img, tokens, require_sparse_label=True, sequence_length=150):
+def predict_greedy(model, input_img, require_sparse_label=True, sequence_length=150):
     current_context = [voc.vocabulary[PLACEHOLDER]] * (CONTEXT_LENGTH - 1)
     current_context.append(voc.vocabulary[START_TOKEN])
     if require_sparse_label:
         current_context = Utils.sparsify(current_context, output_size)
 
     predictions = START_TOKEN
-    out_probas = []
 
-    errors = 0
-    correct = 0
-    total = len(tokens)
     predicted_tokens = []
 
     for i in range(0, sequence_length):
         probas = model.predict(input_img, np.array([current_context]))
         prediction = np.argmax(probas)
-        out_probas.append(probas)
 
         new_context = []
         for j in range(1, CONTEXT_LENGTH):
@@ -93,16 +85,20 @@ def predict_greedy(model, input_img, tokens, require_sparse_label=True, sequence
         if voc.token_lookup[prediction] == END_TOKEN:
             break
 
+    return predicted_tokens
+
+
+def get_img_score(predicted_tokens, tokens):
+    errors = 0
+    correct = 0
     if len(tokens) != len(predicted_tokens):
         errors += abs(len(predicted_tokens) - len(tokens))
-
     for i in range(0, min(len(tokens), len(predicted_tokens))):
         if predicted_tokens[i] != tokens[i]:
             errors += 1
         else:
             correct += 1
-
-    return predictions, out_probas, (correct * 100) / (correct + errors)
+    return (correct * 100) / (correct + errors)
 
 
 total_score = 0
@@ -111,7 +107,9 @@ for i in img_paths:
     gui = i.replace('png', 'gui')
     evaluation_img, tokens = get_eval_img(i, gui)
     print(gui)
-    _, _, result = predict_greedy(model, np.array([evaluation_img]), tokens[1:-1])
+    predicted_tokens = predict_greedy(model, np.array([evaluation_img]))
+
+    result = get_img_score(predicted_tokens, tokens[1:-1])
     total_score += result
     index += 1
     print("Tony accuracy: ", total_score / index)
