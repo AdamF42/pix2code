@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from __future__ import absolute_import
+
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import os
-import sys
 import shutil
+import sys
 
 from classes.Utils import *
 from classes.model.Config import *

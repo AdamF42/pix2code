@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from __future__ import absolute_import
+
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import sys
-
 from os.path import basename
+
 from classes.Sampler import *
 from classes.model.pix2code import *
 
@@ -13,7 +14,8 @@ argv = sys.argv[1:]
 
 if len(argv) < 4:
     print("Error: not enough argument supplied:")
-    print("sample.py <trained weights path> <trained model name> <input image> <output path> <search method (default: greedy)>")
+    print(
+        "sample.py <trained weights path> <trained model name> <input image> <output path> <search method (default: greedy)>")
     exit(0)
 else:
     trained_weights_path = argv[0]

@@ -1,10 +1,11 @@
 from __future__ import print_function
 from __future__ import absolute_import
+
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
-from .Vocabulary import *
 from .BeamSearch import *
 from .Utils import *
+from .Vocabulary import *
 
 
 class Sampler:

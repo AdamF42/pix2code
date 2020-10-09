@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from __future__ import absolute_import
+
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
-import os
-import sys
 import hashlib
+import os
 import shutil
+import sys
 
 from classes.Sampler import *
 
@@ -39,7 +40,8 @@ training_samples_number = evaluation_samples_number * distribution
 
 assert training_samples_number + evaluation_samples_number == len(paths)
 
-print("Splitting datasets, training samples: {}, evaluation samples: {}".format(training_samples_number, evaluation_samples_number))
+print("Splitting datasets, training samples: {}, evaluation samples: {}".format(training_samples_number,
+                                                                                evaluation_samples_number))
 
 np.random.shuffle(paths)
 
@@ -86,12 +88,16 @@ if not os.path.exists("{}/{}".format(os.path.dirname(input_path), TRAINING_SET_N
     os.makedirs("{}/{}".format(os.path.dirname(input_path), TRAINING_SET_NAME))
 
 for path in eval_set:
-    shutil.copyfile("{}/{}.png".format(input_path, path), "{}/{}/{}.png".format(os.path.dirname(input_path), EVALUATION_SET_NAME, path))
-    shutil.copyfile("{}/{}.gui".format(input_path, path), "{}/{}/{}.gui".format(os.path.dirname(input_path), EVALUATION_SET_NAME, path))
+    shutil.copyfile("{}/{}.png".format(input_path, path),
+                    "{}/{}/{}.png".format(os.path.dirname(input_path), EVALUATION_SET_NAME, path))
+    shutil.copyfile("{}/{}.gui".format(input_path, path),
+                    "{}/{}/{}.gui".format(os.path.dirname(input_path), EVALUATION_SET_NAME, path))
 
 for path in train_set:
-    shutil.copyfile("{}/{}.png".format(input_path, path), "{}/{}/{}.png".format(os.path.dirname(input_path), TRAINING_SET_NAME, path))
-    shutil.copyfile("{}/{}.gui".format(input_path, path), "{}/{}/{}.gui".format(os.path.dirname(input_path), TRAINING_SET_NAME, path))
+    shutil.copyfile("{}/{}.png".format(input_path, path),
+                    "{}/{}/{}.png".format(os.path.dirname(input_path), TRAINING_SET_NAME, path))
+    shutil.copyfile("{}/{}.gui".format(input_path, path),
+                    "{}/{}/{}.gui".format(os.path.dirname(input_path), TRAINING_SET_NAME, path))
 
 print("Training dataset: {}/training_set".format(os.path.dirname(input_path), path))
 print("Evaluation dataset: {}/eval_set".format(os.path.dirname(input_path), path))

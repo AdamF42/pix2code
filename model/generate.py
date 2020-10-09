@@ -1,23 +1,22 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from __future__ import absolute_import
+
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import os
 import sys
 
+import numpy as np
 from classes.Sampler import *
 from classes.model.pix2code import *
-
-import numpy as np
-
-from classes.dataset.Dataset import Dataset
 
 argv = sys.argv[1:]
 
 if len(argv) < 5:
     print("Error: not enough argument supplied:")
-    print("generate.py <trained weights path> <trained model name> <input image> <output path> <encoding_type> <search method (default: greedy)>")
+    print(
+        "generate.py <trained weights path> <trained model name> <input image> <output path> <encoding_type> <search method (default: greedy)>")
     exit(0)
 else:
     trained_weights_path = argv[0]

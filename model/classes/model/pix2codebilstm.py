@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 from keras import *
@@ -6,8 +7,6 @@ from keras.layers import Bidirectional
 from keras.layers import Dense, Dropout, \
     RepeatVector, LSTM, concatenate, \
     Conv2D, MaxPooling2D, Flatten
-from keras.metrics import Accuracy
-from keras.optimizers import RMSprop
 
 from .AModel import *
 from .Config import *
@@ -51,7 +50,6 @@ class pix2codeBiLSTM(AModel):
 
         textual_input = Input(shape=(CONTEXT_LENGTH, output_size))
         encoded_text = language_model(textual_input)
-
 
         decoder = concatenate([encoded_image, encoded_text])
 

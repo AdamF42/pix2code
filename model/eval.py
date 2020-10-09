@@ -10,6 +10,8 @@ from classes.Vocabulary import *
 from classes.dataset.Generator import *
 from classes.model.pix2code import *
 
+# from model.classes.model.pix2code import *
+
 argv = sys.argv[1:]
 
 if len(argv) < 2:

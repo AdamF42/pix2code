@@ -1,9 +1,8 @@
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import sys
+
 import numpy as np
-import gensim
-from gensim.models import Word2Vec
 
 START_TOKEN = "<START>"
 END_TOKEN = "<END>"

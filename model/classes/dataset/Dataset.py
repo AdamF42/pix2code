@@ -5,7 +5,6 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 import os
 
 import numpy as np
-
 from classes.Utils import *
 from classes.Vocabulary import *
 from classes.model.Config import *
@@ -128,7 +127,7 @@ class Dataset:
 
         a = np.concatenate([suffix, token_sequence])
         for j in range(0, len(a) - CONTEXT_LENGTH):
-            #TODO: come viene usato context
+            # TODO: come viene usato context
             context = a[j:j + CONTEXT_LENGTH]
             label = a[j + CONTEXT_LENGTH]
             self.ids.append(sample_id)

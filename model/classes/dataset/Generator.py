@@ -15,7 +15,7 @@ class Generator:
         assert len(gui_paths) == len(img_paths)
         dataset.create_word2vec_representation()
         return Generator.data_generator(voc, gui_paths, img_paths, batch_size, generate_binary_sequences, verbose,
-                                 loop_only_one)
+                                        loop_only_one)
 
     @staticmethod
     def data_generator_one_hot(voc, gui_paths, img_paths, batch_size, generate_binary_sequences=False,
@@ -23,7 +23,7 @@ class Generator:
         assert len(gui_paths) == len(img_paths)
         # voc.create_binary_representation()
         return Generator.data_generator(voc, gui_paths, img_paths, batch_size, generate_binary_sequences, verbose,
-                                 loop_only_one)
+                                        loop_only_one)
 
     @staticmethod
     def data_generator(voc, gui_paths, img_paths, batch_size, generate_binary_sequences=False,
@@ -75,7 +75,8 @@ class Generator:
                         if generate_binary_sequences:
                             batch_partial_sequences = Dataset.binarize(batch_partial_sequences, voc)
                         else:
-                            batch_partial_sequences = Dataset.indexify(batch_partial_sequences, voc)  # 64 ndarray di 48 x 19 contenenti la codifica del words.vocab
+                            batch_partial_sequences = Dataset.indexify(batch_partial_sequences,
+                                                                       voc)  # 64 ndarray di 48 x 19 contenenti la codifica del words.vocab
 
                         if verbose:
                             print("Convert arrays...")
