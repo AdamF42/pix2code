@@ -57,9 +57,7 @@ def run(input_path, output_path, model_type, encoding_type, is_memory_intensive=
     if not is_memory_intensive:
         model.fit(dataset.input_images, dataset.partial_sequences, dataset.next_words)
     else:
-        model.fit_generator(generator, steps_per_epoch=steps_per_epoch)
-
-    model.get_time_history()
+        model.fit_generator(generator, steps_per_epoch=steps_per_epoch, epochs=20)
 
 
 def get_generator(dataset, encoding_type, gui_paths, img_paths, voc):

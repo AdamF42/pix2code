@@ -2,7 +2,6 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 from keras.models import model_from_json
 
-from classes.TimeHistory import TimeHistory
 from keras.optimizers import RMSprop
 
 
@@ -13,7 +12,6 @@ class AModel:
         self.output_size = output_size
         self.output_path = output_path
         self.name = ""
-        self.callback = TimeHistory()
         self.encoding_type = encoding_type
 
     def save(self):
@@ -28,25 +26,6 @@ class AModel:
             loaded_model_json = json_file.read()
         self.model = model_from_json(loaded_model_json)
         self.model.load_weights("{}/{}_{}.h5".format(self.output_path, output_name, self.encoding_type))
-
-    def get_time_history(self):  # TODO: fix time
-        return self.callback.times
-
-    def minevaluate(self, dataset):
-        dataleng = len(dataset.input_images)
-        batch_size = 2048
-        step = dataleng // batch_size + 1
-        sumscore = 0.0
-        sumloss = 0.0
-        for i in range(step):
-            images, partial_captions, next_words = dataset.minconvert_arrays(i, batch_size)
-            loss, score = self.model.evaluate([images, partial_captions], next_words, batch_size=64)
-            sumscore = sumscore + score
-            sumloss = sumloss + loss
-            print("loss:", loss, "accuracy:", score)
-        avscore = sumscore / step
-        avloss = sumloss / step
-        return avscore, avloss
 
     def compile(self):
         optimizer = RMSprop(lr=0.0002, clipvalue=1.0)

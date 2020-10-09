@@ -162,3 +162,6 @@ bin/
 
 # generated .gui
 code/*.gui
+
+# generated .gui
+code/
