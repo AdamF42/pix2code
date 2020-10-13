@@ -4,7 +4,8 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 from keras import *
 from keras.applications import ResNet152
-from keras.layers import Dense, RepeatVector, LSTM, concatenate
+from keras.layers import Dense, RepeatVector, LSTM, concatenate, Reshape, Flatten, Dropout
+from tensorflow.python.keras.applications.resnet import ResNet50
 
 from .AModel import *
 from .Config import *
@@ -17,7 +18,14 @@ class pix2codeResNet(AModel):
         self.name = "pix2code"
 
         image_model = Sequential()
-        image_model.add(ResNet152(include_top=False, weights=None, input_shape=input_shape))
+        image_model.add(ResNet50(include_top=False, weights=None, input_shape=input_shape))
+
+        image_model.add(Flatten())
+        image_model.add(Dense(1024, activation='relu'))
+        image_model.add(Dropout(0.3))
+        image_model.add(Dense(1024, activation='relu'))
+        image_model.add(Dropout(0.3))
+
         image_model.add(RepeatVector(CONTEXT_LENGTH))
 
         visual_input = Input(shape=input_shape)
@@ -29,6 +37,7 @@ class pix2codeResNet(AModel):
 
         textual_input = Input(shape=(CONTEXT_LENGTH, output_size))
         encoded_text = language_model(textual_input)
+
 
         # should be(None, 48, 1024) (None, 48, 128)
         decoder = concatenate([encoded_image, encoded_text]) # (None, 8, 8, 2048) (None, 48, 128)
