@@ -59,17 +59,15 @@ class pix2codeBiLSTM(AModel):
         decoder = Dense(output_size, activation='softmax')(decoder)
 
         self.model = Model(inputs=[visual_input, textual_input], outputs=decoder)
-
-        # optimizer = RMSprop(lr=0.0001, clipvalue=1.0)
         self.compile()
 
     def fit(self, images, partial_captions, next_words):
-        self.model.fit([images, partial_captions], next_words, shuffle=False, epochs=EPOCHS, batch_size=BATCH_SIZE,
-                       verbose=1, callbacks=self.callback)
+        self.model.fit([images, partial_captions], next_words, shuffle=False, epochs=EPOCHS,
+                       batch_size=BATCH_SIZE, verbose=1)
         self.save()
 
-    def fit_generator(self, generator, steps_per_epoch):
-        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=EPOCHS, verbose=1)
+    def fit_generator(self, generator, steps_per_epoch, epochs=10):
+        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=epochs, verbose=1)
         self.save()
 
     def predict(self, image, partial_caption):

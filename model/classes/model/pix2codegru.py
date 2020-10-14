@@ -58,8 +58,6 @@ class pix2codegru(AModel):
         decoder = Dense(output_size, activation='softmax')(decoder)
 
         self.model = Model(inputs=[visual_input, textual_input], outputs=decoder)
-
-        # optimizer = RMSprop(lr=0.0001, clipvalue=1.0)
         self.compile()
 
     def fit(self, images, partial_captions, next_words):
@@ -67,8 +65,8 @@ class pix2codegru(AModel):
                        verbose=1, callbacks=self.callback)
         self.save()
 
-    def fit_generator(self, generator, steps_per_epoch):
-        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=EPOCHS, verbose=1)
+    def fit_generator(self, generator, steps_per_epoch, epochs=10):
+        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=epochs, verbose=1)
         self.save()
 
     def predict(self, image, partial_caption):
