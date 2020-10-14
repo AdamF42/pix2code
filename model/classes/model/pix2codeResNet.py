@@ -3,22 +3,21 @@ from __future__ import absolute_import
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 from keras import *
-from keras.applications import ResNet152
-from keras.layers import Dense, RepeatVector, LSTM, concatenate, Reshape, Flatten, Dropout
-from tensorflow.python.keras.applications.resnet import ResNet50
+from keras.layers import Dense, RepeatVector, LSTM, concatenate, Flatten, Dropout
+from tensorflow.python.keras.applications.resnet_v2 import ResNet50V2
 
 from .AModel import *
 from .Config import *
 
 
 class pix2codeResNet(AModel):
+    name: str = "resnet"
 
     def __init__(self, input_shape, output_size, output_path, encoding_type):
         AModel.__init__(self, input_shape, output_size, output_path, encoding_type)
-        self.name = "pix2code"
 
         image_model = Sequential()
-        image_model.add(ResNet50(include_top=False, weights=None, input_shape=input_shape))
+        image_model.add(ResNet50V2(include_top=False, weights=None, input_shape=input_shape))
 
         image_model.add(Flatten())
         image_model.add(Dense(1024, activation='relu'))
@@ -38,9 +37,8 @@ class pix2codeResNet(AModel):
         textual_input = Input(shape=(CONTEXT_LENGTH, output_size))
         encoded_text = language_model(textual_input)
 
-
         # should be(None, 48, 1024) (None, 48, 128)
-        decoder = concatenate([encoded_image, encoded_text]) # (None, 8, 8, 2048) (None, 48, 128)
+        decoder = concatenate([encoded_image, encoded_text])  # (None, 8, 8, 2048) (None, 48, 128)
 
         decoder = LSTM(512, return_sequences=True)(decoder)
         decoder = LSTM(512, return_sequences=False)(decoder)

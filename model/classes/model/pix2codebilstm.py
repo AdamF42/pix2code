@@ -13,9 +13,10 @@ from .Config import *
 
 
 class pix2codeBiLSTM(AModel):
+    name: str = "bilstm"
+
     def __init__(self, input_shape, output_size, output_path, encoding_type):
         AModel.__init__(self, input_shape, output_size, output_path, encoding_type)
-        self.name = "pix2codebilstm"
 
         image_model = Sequential()
         image_model.add(Conv2D(32, (3, 3), padding='valid', activation='relu', input_shape=input_shape))

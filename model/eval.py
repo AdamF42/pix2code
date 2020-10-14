@@ -23,14 +23,17 @@ else:
     trained_weights_path = argv[0]
     trained_model_name = argv[1]
     input_path = argv[2]
+    encoding_type = argv[3]
+
     print(trained_weights_path)
     print(trained_model_name)
     print(input_path)
+    print(encoding_type)
 
 meta_dataset = np.load("{}/meta_dataset.npy".format(trained_weights_path), allow_pickle=True)
 input_shape = meta_dataset[0]
 output_size = meta_dataset[1]
-model = pix2code(input_shape, output_size, trained_weights_path, encoding_type="one_hot")  # TODO: crea parametro
+model = pix2code(input_shape, output_size, trained_weights_path, encoding_type=encoding_type)
 model.load(trained_model_name)
 
 dataset = Dataset()

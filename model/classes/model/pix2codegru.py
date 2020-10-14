@@ -4,17 +4,18 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 from keras import *
 from keras.layers import Dense, Dropout, \
-	RepeatVector, GRU, concatenate, \
-	Conv2D, MaxPooling2D, Flatten
+    RepeatVector, GRU, concatenate, \
+    Conv2D, MaxPooling2D, Flatten
 
 from .AModel import *
 from .Config import *
 
 
 class pix2codegru(AModel):
+    name: str = "gru"
+
     def __init__(self, input_shape, output_size, output_path, encoding_type):
         AModel.__init__(self, input_shape, output_size, output_path, encoding_type)
-        self.name = "pix2codegru"
 
         image_model = Sequential()
         image_model.add(Conv2D(32, (3, 3), padding='valid', activation='relu', input_shape=input_shape))
