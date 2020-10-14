@@ -4,6 +4,7 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 import os
 
+import gensim
 import numpy as np
 from classes.Utils import *
 from classes.Vocabulary import *
