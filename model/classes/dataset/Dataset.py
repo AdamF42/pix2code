@@ -9,6 +9,8 @@ import numpy as np
 from classes.Utils import *
 from classes.Vocabulary import *
 from classes.model.Config import *
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
 
 
 class Dataset:
@@ -90,15 +92,29 @@ class Dataset:
 
     def create_word2vec_representation(self):
         print("Creating w2c representation...")
-        model1 = gensim.models.Word2Vec([self.voc.vocabulary], min_count=1,
-                                        size=100, window=3)
+        w2v_model = gensim.models.Word2Vec(min_count=1,
+                                        size=10,
+                                        window=3,
+                                        # seed=42,
+                                        # workers=1,
+                                        batch_words=64)
+        w2v_model.build_vocab([self.voc.vocabulary])
 
-        model1.train(self.data, total_examples=1, epochs=10)
+        # w2v_model.train(self.data, total_examples=len(self.data), epochs=w2v_model.iter)
+        w2v_model.train(self.data, total_examples=len(self.data), epochs=3)
+        w2v_model.init_sims(replace=True)
+
+        # words = list(w2v_model.wv.vocab)
+        # print(words)
+        # print(len(words))
+        self.tsne_plot(w2v_model)
 
         for token in self.voc.vocabulary:
-            vector = model1.wv[token]
+            vector = w2v_model.wv[token]
             self.voc.binary_vocabulary[token] = vector
 
+
+        
     def convert_arrays(self):
         print("Convert arrays into np.array...")
         self.input_images = np.array(self.input_images)
@@ -122,13 +138,10 @@ class Dataset:
         # Insieme dei token che servono per word2vec
         self.data.append(token_sequence)
 
-        self.data.append(token_sequence)
-
         suffix = [PLACEHOLDER] * CONTEXT_LENGTH
 
         a = np.concatenate([suffix, token_sequence])
         for j in range(0, len(a) - CONTEXT_LENGTH):
-            # TODO: come viene usato context
             context = a[j:j + CONTEXT_LENGTH]
             label = a[j + CONTEXT_LENGTH]
             self.ids.append(sample_id)
@@ -168,3 +181,36 @@ class Dataset:
 
     def save_metadata(self, path):
         np.save("{}/meta_dataset".format(path), np.array([self.input_shape, self.output_size, self.size]))
+
+    @staticmethod
+    def tsne_plot(model):
+        "Create TSNE model and plot it"
+        labels = []
+        tokens = []
+    
+        for word in model.wv.vocab:
+            tokens.append(model[word])
+            labels.append(word)
+    
+        tsne_model = TSNE(perplexity=5, n_components=2, init='pca', n_iter=3500, random_state=23)
+        new_values = tsne_model.fit_transform(tokens)
+
+        x = []
+        y = []
+        for value in new_values:
+            x.append(value[0])
+            y.append(value[1])
+    
+        plt.figure(figsize=(18, 18))
+        for i in range(len(x)):
+            plt.scatter(x[i], y[i])
+            plt.annotate(labels[i],
+                         xy=(x[i], y[i]),
+                         xytext=(5, 2),
+                         textcoords='offset points',
+                         ha='right',
+                         va='bottom')
+        plt.show()
+
+    
+    

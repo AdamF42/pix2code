@@ -15,6 +15,7 @@ class pix2code(AModel):
     name = "base"
 
     def __init__(self, input_shape, output_size, output_path, encoding_type):
+        self.name=self.name
         AModel.__init__(self, input_shape, output_size, output_path, encoding_type)
 
         image_model = Sequential()
@@ -66,7 +67,7 @@ class pix2code(AModel):
         self.save()
 
     def fit_generator(self, generator, steps_per_epoch, epochs=EPOCHS):
-        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=epochs, verbose=2)
+        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=epochs, verbose=1, batch_size=BATCH_SIZE)
         self.save()
 
     def predict_batch(self, images, partial_captions):

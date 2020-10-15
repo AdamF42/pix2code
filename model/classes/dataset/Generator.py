@@ -10,10 +10,10 @@ from classes.model.Config import *
 class Generator:
 
     @staticmethod
-    def data_generator_w2v(voc, dataset, gui_paths, img_paths, batch_size, generate_binary_sequences=False,
+    def data_generator_w2v(voc, gui_paths, img_paths, batch_size, generate_binary_sequences=False,
                            verbose=False, loop_only_one=False):
         assert len(gui_paths) == len(img_paths)
-        dataset.create_word2vec_representation()
+        # dataset.create_word2vec_representation()
         return Generator.data_generator(voc, gui_paths, img_paths, batch_size, generate_binary_sequences, verbose,
                                         loop_only_one)
 

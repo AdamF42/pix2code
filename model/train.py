@@ -45,7 +45,7 @@ def run(input_path, output_path, model_type, encoding_type, is_memory_intensive=
         voc = Vocabulary()
         voc.retrieve(output_path)
 
-        generator = get_generator(dataset, encoding_type, gui_paths, img_paths, voc)
+        generator = get_generator(encoding_type, gui_paths, img_paths, voc)
 
     model = ModelFactory.create_model(model_type, input_shape, output_size, output_path, encoding_type)
     model.model.summary()
@@ -60,12 +60,12 @@ def run(input_path, output_path, model_type, encoding_type, is_memory_intensive=
         model.fit_generator(generator, steps_per_epoch=steps_per_epoch, epochs=10)
 
 
-def get_generator(dataset, encoding_type, gui_paths, img_paths, voc):
+def get_generator(encoding_type, gui_paths, img_paths, voc):
     if encoding_type == "one_hot":
         return Generator.data_generator_one_hot(voc, gui_paths, img_paths, batch_size=BATCH_SIZE,
                                                 generate_binary_sequences=True)
     elif encoding_type == "w2v":
-        return Generator.data_generator_w2v(voc, dataset, gui_paths, img_paths, batch_size=BATCH_SIZE,
+        return Generator.data_generator_w2v(voc, gui_paths, img_paths, batch_size=BATCH_SIZE,
                                             generate_binary_sequences=True)
     else:
         raise Exception("Missing parameter")
