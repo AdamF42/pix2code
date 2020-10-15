@@ -91,7 +91,7 @@ class Dataset:
     def create_word2vec_representation(self):
         print("Creating w2c representation...")
         model1 = gensim.models.Word2Vec([self.voc.vocabulary], min_count=1,
-                                        size=19, window=3)
+                                        size=100, window=3)
 
         model1.train(self.data, total_examples=1, epochs=10)
 
