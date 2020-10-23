@@ -49,8 +49,7 @@ class Vocabulary:
         else:
             items = self.binary_vocabulary.iteritems()
         for key, value in items:
-            print("Max line size: "+ str(self.size * value.size))
-            max_line_width=self.size * value.size
+            max_line_width = self.size * value.size
             array_as_string = np.array2string(value, separator=',', max_line_width=max_line_width)
             string += "{}{}{}\n".format(key, SEPARATOR, array_as_string[1:len(array_as_string) - 1])
         return string  # \n->[codifica]\n

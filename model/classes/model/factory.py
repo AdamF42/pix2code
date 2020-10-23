@@ -2,6 +2,7 @@ from classes.model.pix2code import pix2code
 from classes.model.pix2codeResNet import pix2codeResNet
 from classes.model.pix2codebilstm import pix2codeBiLSTM
 from classes.model.pix2codegru import pix2codegru
+from classes.model.pix2codeVGG16 import pix2codeVGG16
 
 
 class ModelFactory:
@@ -14,6 +15,8 @@ class ModelFactory:
         elif model == pix2codegru.name:
             return pix2codegru(input_shape, output_size, output_path, encoding_type)
         elif model == pix2codeResNet.name:
+            return pix2codeResNet(input_shape, output_size, output_path, encoding_type)
+        elif model == pix2codeVGG16.name:
             return pix2codeResNet(input_shape, output_size, output_path, encoding_type)
         else:
             raise Exception("Model not found")

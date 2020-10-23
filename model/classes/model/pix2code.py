@@ -67,7 +67,7 @@ class pix2code(AModel):
         self.save()
 
     def fit_generator(self, generator, steps_per_epoch, epochs=EPOCHS):
-        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=epochs, verbose=1, batch_size=BATCH_SIZE)
+        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=epochs, verbose=2, batch_size=BATCH_SIZE)
         self.save()
 
     def predict_batch(self, images, partial_captions):

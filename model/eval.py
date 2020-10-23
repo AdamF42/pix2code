@@ -35,6 +35,7 @@ input_shape = meta_dataset[0]
 output_size = meta_dataset[1]
 model = pix2code(input_shape, output_size, trained_weights_path, encoding_type=encoding_type)
 model.load(trained_model_name)
+model.model.summary()
 
 dataset = Dataset()
 dataset.load(input_path)  # generate_binary_sequences=True)

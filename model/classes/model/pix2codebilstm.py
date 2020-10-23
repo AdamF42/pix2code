@@ -68,7 +68,7 @@ class pix2codeBiLSTM(AModel):
         self.save()
 
     def fit_generator(self, generator, steps_per_epoch, epochs=10):
-        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=epochs, verbose=1)
+        self.model.fit(generator, steps_per_epoch=steps_per_epoch, epochs=epochs, verbose=2)
         self.save()
 
     def predict(self, image, partial_caption):
