@@ -59,13 +59,13 @@ def get_eval_img(img_path, gui_path):
     return evaluation_img, token_sequence
 
 
-def predict_greedy(model, input_img, sequence_length=150):
+def predict_greedy(model, input_img, real_token_seq):
     current_context = [voc.vocabulary[PLACEHOLDER]] * (CONTEXT_LENGTH - 1)
     current_context.append(voc.vocabulary[START_TOKEN])
     predictions = START_TOKEN
     predicted_tokens = []
 
-    for i in range(0, sequence_length):
+    for i in range(0, len(real_token_seq)):
         probas = model.predict(input_img, np.array([current_context]))
         prediction = np.argmax(probas)
 
@@ -77,7 +77,7 @@ def predict_greedy(model, input_img, sequence_length=150):
 
         predicted_tokens.append(token)
 
-        sparse_label = voc.binary_vocabulary[token]
+        sparse_label = voc.binary_vocabulary[real_token_seq[i]]
         new_context.append(sparse_label)
 
         current_context = new_context
@@ -108,7 +108,8 @@ for i in img_paths:
     gui = i.replace('png', 'gui')
     evaluation_img, tokens = get_eval_img(i, gui)
     print(gui)
-    predicted_tokens = predict_greedy(model, np.array([evaluation_img]))
+
+    predicted_tokens = predict_greedy(model, np.array([evaluation_img]), tokens)
 
     result = get_img_score(predicted_tokens, tokens[1:-1])
     total_score += result
