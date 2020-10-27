@@ -2,7 +2,7 @@ __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
 from keras.models import model_from_json
 
-from keras.optimizers import Adam
+from keras.optimizers import RMSprop
 
 
 class AModel:
@@ -28,6 +28,6 @@ class AModel:
         self.model.load_weights("{}/{}_{}.h5".format(self.output_path, output_name, self.encoding_type))
 
     def compile(self):
-        # optimizer = RMSprop(lr=0.0002, clipvalue=1.0)
-        optimizer = Adam(lr=0.001)
+        optimizer = RMSprop(lr=0.0002, clipvalue=1.0)
+        # optimizer = Adam(lr=0.001)
         self.model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['categorical_accuracy'])
