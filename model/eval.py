@@ -51,8 +51,9 @@ def get_eval_img(img_path, gui_path):
     gui = open(gui_path, 'r')
     token_sequence = [START_TOKEN]
     for line in gui:
-        line = line.replace(",", " ,").replace("\n", " \n")
+        line = line.replace(" ", "  ").replace(",", " ,").replace("\n", " \n")
         tokens = line.split(" ")
+        tokens = map(lambda x: " " if x == "" else x, tokens)
         for token in tokens:
             token_sequence.append(token)
     token_sequence.append(END_TOKEN)
