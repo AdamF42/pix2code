@@ -10,10 +10,10 @@ from classes.model.Config import *
 class Generator:
 
     @staticmethod
-    def data_generator_w2v(voc, gui_paths, img_paths, batch_size, generate_binary_sequences=False,
+    def data_generator_w2v(dataset, voc, gui_paths, img_paths, batch_size, generate_binary_sequences=False,
                            verbose=False, loop_only_one=False):
         assert len(gui_paths) == len(img_paths)
-        # dataset.create_word2vec_representation()
+        dataset.create_word2vec_representation()
         return Generator.data_generator(voc, gui_paths, img_paths, batch_size, generate_binary_sequences, verbose,
                                         loop_only_one)
 
@@ -43,8 +43,9 @@ class Generator:
 
                 token_sequence = [START_TOKEN]
                 for line in gui:
-                    line = line.replace(",", " ,").replace("\n", " \n")
+                    line = line.replace(" ", "  ").replace(",", " ,").replace("\n", " \n")
                     tokens = line.split(" ")
+                    tokens = map(lambda x: " " if x == "" else x, tokens)
                     for token in tokens:
                         voc.append(token)
                         token_sequence.append(token)
@@ -66,7 +67,6 @@ class Generator:
                     batch_next_words.append(one_hot_encoding)
                     sample_in_batch_counter += 1
 
-                    # TODO: Capire perchè ogni 64 cicli (batch_size) fa sta roba
                     if sample_in_batch_counter == batch_size or (loop_only_one and i == len(gui_paths) - 1):
                         if verbose:
                             print("Generating sparse vectors...")

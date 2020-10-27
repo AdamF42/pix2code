@@ -113,8 +113,6 @@ class Dataset:
             vector = w2v_model.wv[token]
             self.voc.binary_vocabulary[token] = vector
 
-
-        
     def convert_arrays(self):
         print("Convert arrays into np.array...")
         self.input_images = np.array(self.input_images)
