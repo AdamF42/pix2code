@@ -59,6 +59,7 @@ def get_eval_img(img_path, gui_path):
     return evaluation_img, token_sequence
 
 
+# TODO: check if need to do something with whitespaces
 def predict_greedy(model, input_img, sequence_length=150):
     current_context = [voc.vocabulary[PLACEHOLDER]] * (CONTEXT_LENGTH - 1)
     current_context.append(voc.vocabulary[START_TOKEN])
