@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 __author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
 
+import os
 import sys
 
 from classes.BeamSearch import *
@@ -46,20 +47,6 @@ voc.retrieve(path="../bin")
 gui_paths, img_paths = Dataset.load_paths_only(input_path)
 
 
-def get_eval_img(img_path, gui_path):
-    evaluation_img = Utils.get_preprocessed_img(img_path, IMAGE_SIZE)
-    gui = open(gui_path, 'r')
-    token_sequence = [START_TOKEN]
-    for line in gui:
-        line = line.replace(" ", "  ").replace(",", " ,").replace("\n", " \n")
-        tokens = line.split(" ")
-        tokens = map(lambda x: " " if x == "" else x, tokens)
-        for token in tokens:
-            token_sequence.append(token)
-    token_sequence.append(END_TOKEN)
-    return evaluation_img, token_sequence
-
-
 # TODO: check if need to do something with whitespaces
 def predict_greedy(model, input_img, sequence_length=150):
     current_context = [voc.vocabulary[PLACEHOLDER]] * (CONTEXT_LENGTH - 1)
@@ -91,28 +78,97 @@ def predict_greedy(model, input_img, sequence_length=150):
     return predicted_tokens
 
 
-def get_img_score(predicted_tokens, tokens):
-    errors = 0
+def create_eval_dict():
+    res_eval = {}  # chiave nome immagine, valore lista di stringhe (righe)
+    count_eval = 0
+    eval_list = []
+    for filename in os.listdir(input_path):
+        if filename.endswith(".gui"):
+            count_eval += 1
+            eval_list.append(filename)
+            with open(os.path.join(input_path, f"{filename}"), 'r') as img:
+
+                lines = []
+                for el in img.readlines():
+                    line = el.replace(" ", "  ") \
+                        .replace(",", " ,") \
+                        .replace("\n", " \n")
+                    tokens = line.split(" ")
+                    tokens = map(lambda x: " " if x == "" else x, tokens)
+                    tokens = filter(lambda x: False if x == " " else True, tokens)
+                    for token in tokens:
+                        lines.append(token)
+
+            res_eval[filename] = lines
+    assert (count_eval == 250)
+    return eval_list, res_eval
+
+
+def create_code_dict():
+    res_code = {}  # chiave nome immagine, valore lista di stringhe (righe)
+    count_code = 0
+    code_list = []
+    for i in os.listdir(input_path):
+        if i.endswith(".gui"):
+            count_code += 1
+            code_list.append(i)
+            img_path = input_path+i.replace("gui","png")
+            evaluation_img = Utils.get_preprocessed_img(img_path, IMAGE_SIZE)
+            tokens = predict_greedy(model, np.array([evaluation_img]))
+            res_code[i] = tokens
+    assert (count_code == 250)
+    return code_list, res_code
+
+
+def check_existing_el(code_list, eval_list):
+    result = all(elem in eval_list for elem in code_list)
+    if result:
+        print("Yes, eval_list contains all elements in code_list")
+    else:
+        print("No, eval_list does not contains all elements in code_list")
+
+
+def compare(eval_el, code_el):
     correct = 0
-    if len(tokens) != len(predicted_tokens):
-        errors += abs(len(predicted_tokens) - len(tokens))
-    for i in range(0, min(len(tokens), len(predicted_tokens))):
-        if predicted_tokens[i] != tokens[i]:
-            errors += 1
-        else:
+    error = 0
+    for i in range(0, min(len(eval_el), len(code_el))):
+        if eval_el[i] == code_el[i]:
             correct += 1
-    return (correct * 100) / (correct + errors)
+        else:
+            error += 1
+    tot = correct + error
+    return correct, error, tot
 
 
-total_score = 0
-index = 0
-for i in img_paths:
-    gui = i.replace('png', 'gui')
-    evaluation_img, tokens = get_eval_img(i, gui)
-    print(gui)
-    predicted_tokens = predict_greedy(model, np.array([evaluation_img]))
+def print_accuracy(len_difference, tot_correct, tot_error, tot_tot):
+    print("CORRETTI: ", tot_correct)
+    print("ERRATI: ", tot_error + len_difference)
+    print("TOTALI: ", tot_tot + len_difference)
+    tot_correct_percentuale = (tot_correct / (tot_tot + len_difference)) * 100
+    tot_error_percentuale = ((tot_error + len_difference) / (tot_tot + len_difference)) * 100
+    print("PERCENTUALE CORRETTI: ", tot_correct_percentuale)
+    print("PERCENTUALE ERRATI: ", tot_error_percentuale)
+    assert round(tot_correct_percentuale, 2) + round(tot_error_percentuale, 2) == 100.0
 
-    result = get_img_score(predicted_tokens, tokens[1:-1])
-    total_score += result
-    index += 1
-    print("Tony accuracy: ", total_score / index)
+
+tot_correct = 0
+tot_error = 0
+tot_tot = 0
+len_difference = 0
+
+eval_list, res_eval = create_eval_dict()
+
+code_list, res_code = create_code_dict()
+
+check_existing_el(code_list, eval_list)
+
+for key in res_eval:
+    if len(res_code[key]) != len(res_eval[key]):
+        # se ho lunghezze diverse conto come errore la loro differenza
+        len_difference += abs(len(res_code[key]) - len(res_eval[key]))
+    corr, err, tot = compare(res_eval[key], res_code[key])
+    tot_correct += corr
+    tot_error += err
+    tot_tot += tot
+
+print_accuracy(len_difference, tot_correct, tot_error, tot_tot)

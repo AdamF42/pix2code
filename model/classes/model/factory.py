@@ -17,6 +17,6 @@ class ModelFactory:
         elif model == pix2codeResNet.name:
             return pix2codeResNet(input_shape, output_size, output_path, encoding_type)
         elif model == pix2codeVGG16.name:
-            return pix2codeResNet(input_shape, output_size, output_path, encoding_type)
+            return pix2codeVGG16(input_shape, output_size, output_path, encoding_type)
         else:
             raise Exception("Model not found")
