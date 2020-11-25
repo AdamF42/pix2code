@@ -165,3 +165,4 @@ code/*.gui
 
 # generated .gui
 code/
+bin_old/
