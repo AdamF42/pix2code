@@ -5,13 +5,14 @@ import os
 
 import gensim
 import numpy as np
+import tensorflow as tf
 from gensim.models import Word2Vec
 
-from model.classes.model.pix2code_w2v import pix2code_w2v
 from w2v_test.dataset import Dataset
+from w2v_test.pix2code_w2v_embedding import Pix2codeW2VEmbedding
 
-IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/single'
-IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/single'
+IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/training_set'
+IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/training_set'
 
 print("################################## GENSIM ##################################")
 
@@ -53,8 +54,10 @@ pretrained_weights = word_model.wv.vectors
 vocab_size, emdedding_size = pretrained_weights.shape
 print('Result embedding shape:', pretrained_weights.shape)
 
+
 def word2idx(word):
     return word_model.wv.vocab[word].index
+
 
 def idx2word(idx):
     return word_model.wv.index2word[idx]
@@ -72,9 +75,7 @@ print('train_y shape:', train_y.shape)
 
 print("emdedding_size: {}, vocab_size: {}".format(emdedding_size, vocab_size))
 
-
 print("################################## DATASET ##################################")
-
 
 # generator.__getitem__(0)
 
@@ -86,17 +87,25 @@ dataset.create_word2vec_representation()
 
 print(dataset.partial_sequences.shape)
 
-model = pix2code_w2v(input_shape=dataset.input_shape, output_path="ciccio", encoding_type="ciccio",
-                     pretrained_weights = pretrained_weights)
+# model = pix2code_w2v(input_shape=dataset.input_shape, output_path="ciccio", encoding_type="ciccio",
+#                      pretrained_weights = pretrained_weights)
+#
+# model.model.summary()
 
-model.model.summary()
+# model.fit(dataset.input_images, dataset.partial_sequences, dataset.next_words)
 
-model.fit(dataset.input_images, dataset.partial_sequences, dataset.next_words)
+new_model = Pix2codeW2VEmbedding(pretrained_weights=pretrained_weights)
 
+new_model.compile()
 
+# img = tf.TensorShape(dataset.input_shape)
+# # print(img)
+# context = tf.TensorShape([48])
+# # print(context)
+# shape = [(None, 256, 256, 3), (None, 48)]
+#
+# new_model.build(shape)
+#
+# new_model.summary()
 
-
-
-
-
-
+new_model.fit([dataset.input_images, dataset.partial_sequences], dataset.next_words)
