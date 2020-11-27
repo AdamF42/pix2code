@@ -8,11 +8,12 @@ import numpy as np
 import tensorflow as tf
 from gensim.models import Word2Vec
 
+from w2v_test.adam_generator import DataGenerator
 from w2v_test.dataset import Dataset
 from w2v_test.pix2code_w2v_embedding import Pix2codeW2VEmbedding
 
-IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/training_set'
-IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/training_set'
+IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/all_data'
+IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/all_data'
 
 print("################################## GENSIM ##################################")
 
@@ -79,13 +80,16 @@ print("################################## DATASET ##############################
 
 # generator.__getitem__(0)
 
-dataset = Dataset(word_model)
+# dataset = Dataset(word_model)
+#
+# dataset.load(IMG_PATH)
+#
+# dataset.create_word2vec_representation()
 
-dataset.load(IMG_PATH)
+# print(dataset.partial_sequences.shape)
 
-dataset.create_word2vec_representation()
+print("################################## MODEL ##################################")
 
-print(dataset.partial_sequences.shape)
 
 # model = pix2code_w2v(input_shape=dataset.input_shape, output_path="ciccio", encoding_type="ciccio",
 #                      pretrained_weights = pretrained_weights)
@@ -98,6 +102,10 @@ new_model = Pix2codeW2VEmbedding(pretrained_weights=pretrained_weights)
 
 new_model.compile()
 
+labels, img_paths = Dataset.load_paths_only(IMG_PATH)
+
+generator = DataGenerator(img_paths, labels, word_model)
+
 # img = tf.TensorShape(dataset.input_shape)
 # # print(img)
 # context = tf.TensorShape([48])
@@ -108,4 +116,6 @@ new_model.compile()
 #
 # new_model.summary()
 
-new_model.fit([dataset.input_images, dataset.partial_sequences], dataset.next_words)
+# new_model.fit([dataset.input_images, dataset.partial_sequences], dataset.next_words)
+
+new_model.fit_generator(generator=generator)
