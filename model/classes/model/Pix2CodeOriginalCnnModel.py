@@ -5,14 +5,14 @@ from tensorflow.keras.optimizers import RMSprop
 
 class Pix2CodeOriginalCnnModel(tf.keras.Model):
 
-    def __init__(self, output_names, dropout_ratio=0.25, activation='relu', *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.output_length = len(output_names)
-        self.layer_output_names = output_names
+    def __init__(self, dropout_ratio=0.25, activation='relu', *args, **kwargs):
+
+        super(Pix2CodeOriginalCnnModel, self).__init__(*args, **kwargs)
+
         self.layer_list = []
         # Input = 256
         self.layer_list.append(
-            Conv2D(32, (3, 3), padding='valid', name='cnn_256pix_1', activation=activation, strides=1))
+            Conv2D(32, (3, 3), padding='valid', name='cnn_256pix_1', activation=activation, strides=1, dtype='float32'))
         self.layer_list.append(
             Conv2D(32, (3, 3), padding='valid', name='cnn_256pix_2', activation=activation, strides=1))
 
@@ -37,20 +37,20 @@ class Pix2CodeOriginalCnnModel(tf.keras.Model):
         self.layer_list.append(Dropout(0.3))
         self.layer_list.append(Dense(1024, activation=activation))
         self.layer_list.append(Dropout(0.3))
-        self.layer_list.append(
-            [Dense(1, name=output_names[i], activation=activation)
-             for i in range(self.output_length)])
+        self.layer_list.append(Dense(19, activation="softmax"))
 
     def call(self, inputs, **kwargs):
-        inp = inputs['img_data']
-        for layer in self.layer_list[:-1]:
-            inp = layer(inp)
-        last_layers = self.layer_list[-1]
-        out = {name+"_count": layer(inp) for name, layer in zip(self.layer_output_names, last_layers)}
+        print("shape: ", tf.shape(inputs))
+        inp = inputs
+        for layer in self.layer_list:
+            # print(layer.name + " shape: ", tf.shape(inp))
+            inp = layer(inp)  # inp = tensor (1, 256, 256, 3) dtype=float32
+
+        out = {self.layer_list[-1].name: self.layer_list[-1]}
         return out
 
     def compile(self, loss='mse', optimizer=RMSprop(lr=0.0001, clipvalue=1.0), **kwargs):
-        self.output_names = sorted([key + "_count" for key in self.layer_output_names])
+        self.output_names = self.layer_list[-1].name
         return super().compile(loss=loss, optimizer=optimizer, **kwargs)
 
     def predict(self, *args, return_as_dict=True, **kwargs):
