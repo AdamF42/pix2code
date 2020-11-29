@@ -2,30 +2,17 @@
 from __future__ import print_function
 from __future__ import absolute_import
 
+import sys
 
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from keras.models import Model
-import matplotlib.pyplot as plt
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 
 from model.classes.model.pix2codeFullOriginalModel import pix2codeFullOriginalModel
 from model.classes.model.Pix2CodeOriginalCnnModel import Pix2CodeOriginalCnnModel
 
-sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
-
 from classes.dataset.Generator import *
-
-
-def full_summary(layer):
-    # check if this layer has layers
-    if hasattr(layer, 'layers'):
-        print('Summary for ' + layer.name)
-        layer.summary()
-        print('\n\n')
-
-        for l in layer.layers:
-            full_summary(l)
 
 
 def main(input_path, output_path, encoding_type, is_memory_intensive=False):
@@ -58,46 +45,118 @@ def main(input_path, output_path, encoding_type, is_memory_intensive=False):
         voc = Vocabulary()
         voc.retrieve(output_path)
 
-    model = pix2codeFullOriginalModel(input_shape=input_shape, output_size=output_size)
-    # model = Pix2CodeOriginalCnnModel("code")
-    print(full_summary(model))
-
     layer_name = "sequential"
     img_path = '../../pix2code/datasets/web/eval_set/0D99F46A-BEDB-444C-B948-246096DFEBD4.png'
     current_context = [voc.vocabulary[PLACEHOLDER]] * CONTEXT_LENGTH
     evaluation_img = Utils.get_preprocessed_img(img_path, IMAGE_SIZE)
     evaluation_img = np.array([evaluation_img])
-    print("shape immagine: ", evaluation_img.shape)  # 1, 256, 256, 3
-    print("shape context: ", np.array(current_context).shape)  # 48, 19
-    print("input layer: ", model.input)  # None, 256, 256, 3   -  None, 48, 19
-    seq = model.get_layer(layer_name)
 
-    layer_to_print = []
-    filter_to_print = []
-    for layer in seq.layers:
-        if "cnn" in layer.name:
-            layer_to_print.append(layer)
-            # get filters
-            filters, biases = layer.get_weights()
-            # print(filters.shape)
-            # normalize filter values to 0-1 so we can visualize them
-            f_min, f_max = filters.min(), filters.max()
-            filters = (filters - f_min) / (f_max - f_min)
-            filter_to_print.append(filters)
+    model = pix2codeFullOriginalModel(input_shape=input_shape, output_size=output_size)
+    # model = Pix2CodeOriginalCnnModel()
 
-    # print(layer_to_print)
+    if type(model) == Pix2CodeOriginalCnnModel:
+        # Use list of layer
+        print(evaluation_img.shape)
+        print(tf.shape(evaluation_img))
+        model.build(evaluation_img.shape)  # model(evaluation_img)
+        # model.compile()
+        model.summary()
 
-    print_filters(filter_to_print)
+        layer_to_print = []
+        filter_to_print = []
+        for layer in model.layer_list:
+            if "cnn" in layer.name:
+                layer_to_print.append(layer)
+                # get filters
+                filters, biases = layer.get_weights()
+                # print(filters.shape)
+                # normalize filter values to 0-1 so we can visualize them
+                f_min, f_max = filters.min(), filters.max()
+                filters = (filters - f_min) / (f_max - f_min)
+                filter_to_print.append(filters)
 
-    for el in layer_to_print:
-        # intermediate_layer_model = Model(inputs=model.get_layer(layer_name).input, outputs=model.get_layer(layer_name).output)
-        intermediate_layer_model = Model(inputs=model.get_layer(layer_name).input
-                                         , outputs=el.output)
-        intermediate_output = intermediate_layer_model.predict(evaluation_img)
-        # print("shape: ", intermediate_output.shape)
-        plt.matshow(intermediate_output[0, :, :, intermediate_output.shape[3]-1], cmap='viridis')
-        plt.show()
-        print("DONE")
+        print_filters(filter_to_print)
+        # print(filter_to_print)
+
+        input_model = tf.keras.Input(shape=evaluation_img.shape)  # shape=(None, 1, 256, 256, 3), dtype=float32)
+        for el in layer_to_print:
+            print("el: ", el)
+            print("oltro: ", el.name)
+            # print("oltro: ", input.shape)
+            # inputs should be Tensor("cnn_256pix_1_input:0", shape=(None, 256, 256, 3), dtype=float32)
+            intermediate_layer_model = Model(inputs=input_model, outputs=el(input_model))
+            intermediate_output = intermediate_layer_model(evaluation_img)
+            plt.matshow(intermediate_output[0, :, :, intermediate_output.shape[3]-1], cmap='viridis')
+            plt.show()
+            print("input: ", intermediate_layer_model.inputs)
+            print("output: ", el.output.name)
+            print("shape: ", intermediate_layer_model.output.shape)
+            input_model = tf.keras.Input(shape=intermediate_layer_model.output.shape)
+            print("DONE")
+
+
+    elif type(model) == pix2codeFullOriginalModel:
+        # Use Sequential()
+        print_model_info(model, "model.png")
+
+        print("shape immagine: ", evaluation_img.shape)  # 1, 256, 256, 3
+        print("shape context: ", np.array(current_context).shape)  # 48, 19
+        print("input layer: ", model.input)  # None, 256, 256, 3   -  None, 48, 19
+        seq = model.get_layer(layer_name)
+
+        layer_to_print = []
+        filter_to_print = []
+        for layer in seq.layers:
+            if "cnn" in layer.name:
+                layer_to_print.append(layer)
+                # get filters
+                filters, biases = layer.get_weights()
+                # print(filters.shape)
+                # normalize filter values to 0-1 so we can visualize them
+                f_min, f_max = filters.min(), filters.max()
+                filters = (filters - f_min) / (f_max - f_min)
+                filter_to_print.append(filters)
+
+        # print(layer_to_print)
+
+        print_filters(filter_to_print)
+
+        for el in layer_to_print:
+            intermediate_layer_model = Model(inputs=model.get_layer(layer_name).input
+                                             , outputs=el.output)
+            print("input: ", intermediate_layer_model.inputs)
+            print("output: ", el.output.name)
+            print("shape: ", intermediate_layer_model.output.shape)
+            intermediate_output = intermediate_layer_model.predict(evaluation_img)
+
+            # intermediate_output = intermediate_layer_model(evaluation_img)
+            # print("shape: ", intermediate_output.shape)
+            plt.matshow(intermediate_output[0, :, :, intermediate_output.shape[3]-1], cmap='viridis')
+            plt.show()
+            print("DONE")
+
+    else:
+        print("ERROR")
+
+
+def print_model_info(model, file):
+    tf.keras.utils.plot_model(
+        model,
+        to_file=file,
+        show_shapes=True
+    )
+    print(full_summary(model))
+
+
+def full_summary(layer):
+    # check if this layer has layers
+    if hasattr(layer, 'layers'):
+        print('Summary for ' + layer.name)
+        layer.summary()
+        print('\n\n')
+
+        for l in layer.layers:
+            full_summary(l)
 
 
 def print_filters(filter_to_print):
@@ -108,14 +167,14 @@ def print_filters(filter_to_print):
         # plot each channel separately
         for j in range(3):
             # specify subplot and turn of axis
-            ax = pyplot.subplot(n_filters, 3, ix)
+            ax = plt.subplot(n_filters, 3, ix)
             ax.set_xticks([])
             ax.set_yticks([])
             # plot filter channel in grayscale
-            pyplot.imshow(f[:, :, j], cmap='gray')
+            plt.imshow(f[:, :, j], cmap='gray')
             ix += 1
     # show the figure
-    pyplot.show()
+    plt.show()
 
 
 if __name__ == "__main__":
