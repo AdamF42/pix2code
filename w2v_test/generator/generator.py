@@ -111,4 +111,6 @@ class DataGenerator(Sequence):
                     batch_partial_sequences = np.array(batch_partial_sequences)  # ndarray -> shape (64, 48, 19)
                     batch_next_words = np.array(batch_next_words)  # ndarray -> shape (64, 19)
 
+                    print([batch_input_images.shape, batch_partial_sequences.shape], batch_next_words.shape)
+
                     return [batch_input_images, batch_partial_sequences], batch_next_words

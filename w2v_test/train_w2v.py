@@ -119,3 +119,11 @@ generator = DataGenerator(img_paths, labels, word_model)
 # new_model.fit([dataset.input_images, dataset.partial_sequences], dataset.next_words)
 
 new_model.fit_generator(generator=generator)
+
+print("################################## PREDICT ##################################")
+
+image_to_predict='/home/adamf42/Projects/pix2code/datasets/web/single/0B660875-60B4-4E65-9793-3C7EB6C8AFD0.png'
+
+prediction = Pix2codeW2VEmbedding.predict_image(new_model,image_to_predict, word_model)
+
+print(prediction)
