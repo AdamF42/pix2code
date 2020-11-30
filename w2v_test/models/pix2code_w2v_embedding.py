@@ -84,7 +84,7 @@ class Pix2codeW2VEmbedding(tf.keras.models.Model):
         return super().compile(loss=loss, optimizer=optimizer, metrics=metrics, **kwargs)
 
     @staticmethod
-    def predict_image(model, image, w2v_model):
+    def predict_image(model, image, w2v_model, max_sentence_len):
 
         def sample(preds, temperature=1.0):
             if temperature <= 0:
@@ -109,7 +109,7 @@ class Pix2codeW2VEmbedding(tf.keras.models.Model):
 
         predictions = START_TOKEN
 
-        for i in range(0, 323):
+        for i in range(0, max_sentence_len):
 
             probas = model.predict(x=[img, np.array([current_context])])
             prediction = sample(probas['code'][-1], temperature=0.7)
