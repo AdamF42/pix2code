@@ -2,7 +2,7 @@ import numpy as np
 from gensim.models import Word2Vec
 from tensorflow.python.keras.utils.data_utils import Sequence
 
-from w2v_test.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, CONTEXT_LENGTH, PLACEHOLDER, BATCH_SIZE
+from w2v_test.costants import IMAGE_SIZE, CONTEXT_LENGTH, PLACEHOLDER, BATCH_SIZE
 from w2v_test.dataset.utils import get_preprocessed_img, get_token_from_gui
 
 
@@ -44,7 +44,7 @@ class DataGenerator(Sequence):
     def on_epoch_end(self):
         'Updates indexes after each epoch'
         self.indexes = np.arange(len(self.samples))
-        if self.shuffle == True:
+        if self.shuffle:
             np.random.shuffle(self.indexes)
 
     def create_samples(self, img_paths, gui_paths):
