@@ -1,55 +1,17 @@
-from __future__ import print_function
-
-__author__ = 'Tony Beltramelli - www.tonybeltramelli.com'
-
 import os
 
 import numpy as np
 from gensim.models import Word2Vec
 
+from w2v_test.costants import START_TOKEN, END_TOKEN, PLACEHOLDER, CONTEXT_LENGTH, IMAGE_SIZE
+from w2v_test.dataset.utils import get_preprocessed_img, show, get_token_from_gui
 
-CONTEXT_LENGTH = 48
-IMAGE_SIZE = 256
-BATCH_SIZE = 64
-START_TOKEN = "<START>"
-END_TOKEN = "<END>"
-PLACEHOLDER = " "
-
-class Utils:
-    @staticmethod
-    def sparsify(label_vector, output_size):
-        sparse_vector = []
-
-        for label in label_vector:
-            sparse_label = np.zeros(output_size)
-            sparse_label[label] = 1
-
-            sparse_vector.append(sparse_label)
-
-        return np.array(sparse_vector)
-
-    @staticmethod
-    def get_preprocessed_img(img_path, image_size = IMAGE_SIZE):
-        import cv2
-        img = cv2.imread(img_path)
-        img = cv2.resize(img, (image_size, image_size))
-        img = img.astype('float32')
-        img /= 255
-        return img
-
-    @staticmethod
-    def show(image):
-        import cv2
-        cv2.namedWindow("view", cv2.WINDOW_AUTOSIZE)
-        cv2.imshow("view", image)
-        cv2.waitKey(0)
-        cv2.destroyWindow("view")
 
 class Dataset:
     def __init__(self, word_model: Word2Vec):
         self.input_shape = None
         self.output_size = None
-        
+
         self.word_model = word_model
 
         self.ids = []
@@ -62,7 +24,7 @@ class Dataset:
 
     @staticmethod
     def load_paths_only(path):
-        print("Parsing data...")
+        print("Loading paths...")
         gui_paths = []
         img_paths = []
         for f in os.listdir(path):
@@ -81,7 +43,7 @@ class Dataset:
         assert len(gui_paths) == len(img_paths)
         return gui_paths, img_paths
 
-    def load_with_word2vec(self, path, generate_binary_sequences=False):
+    def load_with_word2vec(self, path):
         self.load(path)
         print("Generating sparse vectors w2v...")
         self.create_word2vec_representation()
@@ -95,7 +57,7 @@ class Dataset:
                 file_name = f[:f.find(".gui")]
 
                 if os.path.isfile("{}/{}.png".format(path, file_name)):
-                    img = Utils.get_preprocessed_img("{}/{}.png".format(path, file_name), IMAGE_SIZE)
+                    img = get_preprocessed_img("{}/{}.png".format(path, file_name), IMAGE_SIZE)
                     self.append(file_name, gui, img)
 
                 elif os.path.isfile("{}/{}.npz".format(path, file_name)):
@@ -115,21 +77,9 @@ class Dataset:
         if to_show:
             pic = img * 255
             pic = np.array(pic, dtype=np.uint8)
-            Utils.show(pic)
+            show(pic)
 
-        token_sequence = [START_TOKEN]
-        for line in gui:
-            line = line.replace(" ", "  ") \
-                .replace(",", " ,") \
-                .replace("\n", " \n") \
-                .replace("{", " { ") \
-                .replace("}", " } ") \
-                .replace(",", " , ")
-            tokens = line.split(" ")
-            tokens = map(lambda x: " " if x == "" else x, tokens)
-            for token in tokens:
-                token_sequence.append(token)
-        token_sequence.append(END_TOKEN)
+        token_sequence = get_token_from_gui(gui)
 
         suffix = [PLACEHOLDER] * CONTEXT_LENGTH
 
@@ -156,11 +106,9 @@ class Dataset:
 
         assert len(self.input_images) == len(self.partial_sequences) == len(self.next_words)
 
-        # for i in range(0, self.size):
-        #     self.next_words[i] = self.word2idx(self.next_words[i])
         self.next_words = self.w2v_encode_next_words()
 
-        self.partial_sequences =  self.w2v_encode_partial_sequences()
+        self.partial_sequences = self.w2v_encode_partial_sequences()
 
         self.convert_arrays()
 
@@ -179,4 +127,3 @@ class Dataset:
         for token in self.next_words:
             temp.append(self.word2idx(token))
         return temp
-

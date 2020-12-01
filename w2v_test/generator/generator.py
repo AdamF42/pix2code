@@ -2,26 +2,22 @@ import numpy as np
 from gensim.models import Word2Vec
 from tensorflow.python.keras.utils.data_utils import Sequence
 
-CONTEXT_LENGTH = 48
-IMAGE_SIZE = 256
-BATCH_SIZE = 64
-START_TOKEN = "<START>"
-END_TOKEN = "<END>"
-PLACEHOLDER = " "
+from w2v_test.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, CONTEXT_LENGTH, PLACEHOLDER, BATCH_SIZE
+from w2v_test.dataset.utils import get_preprocessed_img, get_token_from_gui
 
 
 class DataGenerator(Sequence):
     'Generates data for Keras'
 
-    def __init__(self, img_paths, labels, word_model: Word2Vec, batch_size=64):
+    def __init__(self, img_paths, gui_paths, word_model: Word2Vec, shuffle=True, batch_size=BATCH_SIZE):
         'Initialization'
+        self.shuffle = shuffle
         self.batch_size = batch_size
-        self.labels = labels
-        self.img_paths = img_paths
-        self.on_epoch_end()
         self.word_model = word_model
+        self.samples = self.create_samples(img_paths, gui_paths)
+        self.on_epoch_end()
 
-    def indexify(self, partial_sequences):
+    def context_to_w2v_indexes(self, partial_sequences):
         temp = []
         for sequence in partial_sequences:
             sparse_vectors_sequence = []
@@ -31,61 +27,38 @@ class DataGenerator(Sequence):
 
         return temp
 
-    @staticmethod
-    def get_preprocessed_img(img_path, image_size):
-        import cv2
-        img = cv2.imread(img_path)
-        img = cv2.resize(img, (image_size, image_size))
-        img = img.astype('float32')
-        img /= 255
-        return img
-
     def __len__(self):
         'Denotes the number of batches per epoch'
-        return int(np.floor(len(self.img_paths) / self.batch_size))
+        return int(np.floor(len(self.samples) / self.batch_size))
 
     def __getitem__(self, index):
         'Generate one batch of data'
         # Generate indexes of the batch
         indexes = self.indexes[index * self.batch_size:(index + 1) * self.batch_size]
-
         # Find list of IDs
-        img_paths_temp = [self.img_paths[k] for k in indexes]
-
+        tmp_samples = [self.samples[k] for k in indexes]
         # Generate data
-        X, y = self.__data_generation(img_paths_temp)
+        X, y = self.__data_generation(tmp_samples)
         return X, y
 
     def on_epoch_end(self):
         'Updates indexes after each epoch'
-        self.indexes = np.arange(len(self.img_paths))
-        # print("GENERATOR INDEX: {}",format(self.indexes))
-        # if self.shuffle == True:
-        #     np.random.shuffle(self.indexes)
+        self.indexes = np.arange(len(self.samples))
+        if self.shuffle == True:
+            np.random.shuffle(self.indexes)
 
-    def __data_generation(self, gui_paths_temp):
-        'Generates data containing batch_size samples'  # X : (n_samples, *dim, n_channels)
+    def create_samples(self, img_paths, gui_paths):
 
-        # Initialization
-        batch_input_images = []
-        batch_partial_sequences = []
-        batch_next_words = []
-        sample_in_batch_counter = 0
-
+        images = []
+        contexts = []
+        labels = []
         # Generate data
-        for i in range(0, len(gui_paths_temp)):
-            # if self.gui_paths[i].find(".png") != -1: TODO check
-            img = self.get_preprocessed_img(self.img_paths[i], IMAGE_SIZE)
-            gui = open(self.labels[i], 'r')
+        for i in range(0, len(gui_paths)):
+            img = get_preprocessed_img(img_paths[i], IMAGE_SIZE)
 
-            token_sequence = [START_TOKEN]
-            for line in gui:
-                line = line.replace(" ", "  ").replace(",", " ,").replace("\n", " \n")
-                tokens = line.split(" ")
-                tokens = map(lambda x: " " if x == "" else x, tokens)
-                for token in tokens:
-                    token_sequence.append(token)
-            token_sequence.append(END_TOKEN)
+            gui = open(gui_paths[i], 'r')
+
+            token_sequence = get_token_from_gui(gui)
 
             suffix = [PLACEHOLDER] * CONTEXT_LENGTH
 
@@ -93,24 +66,37 @@ class DataGenerator(Sequence):
             for j in range(0, len(a) - CONTEXT_LENGTH):
                 context = a[j:j + CONTEXT_LENGTH]
                 label = a[j + CONTEXT_LENGTH]  # label = name
+                encoded_label = self.word_model.wv.vocab[label].index
 
-                batch_input_images.append(img)
-                batch_partial_sequences.append(context)
+                contexts.append(context)
+                images.append(img)
+                labels.append(encoded_label)
 
-                encoding = self.word_model.wv.vocab[label].index
+        contexts = self.context_to_w2v_indexes(contexts)
+        assert len(images) == len(contexts) == len(labels)
 
-                batch_next_words.append(encoding)
-                sample_in_batch_counter += 1
+        samples = [{'img': images[i], 'context': contexts[i], 'label': labels[i]} for i in range(len(images))]
 
-                if sample_in_batch_counter == self.batch_size:
-                    # if verbose:
-                    # print("Generating sparse vectors...")
-                    batch_partial_sequences = self.indexify(batch_partial_sequences)
+        return samples
 
-                    batch_input_images = np.array(batch_input_images)  # ndarray -> shape (64, 256, 256, 3)
-                    batch_partial_sequences = np.array(batch_partial_sequences)  # ndarray -> shape (64, 48, 19)
-                    batch_next_words = np.array(batch_next_words)  # ndarray -> shape (64, 19)
+    def __data_generation(self, tmp_samples):
+        'Generates data containing batch_size samples'
 
-                    print([batch_input_images.shape, batch_partial_sequences.shape], batch_next_words.shape)
+        # Initialization
+        batch_input_images = []
+        batch_partial_sequences = []
+        batch_next_words = []
 
-                    return [batch_input_images, batch_partial_sequences], batch_next_words
+        # Generate data
+        for i in range(0, len(tmp_samples)):
+            batch_input_images.append(tmp_samples[i]['img'])
+            batch_partial_sequences.append(tmp_samples[i]['context'])
+            batch_next_words.append(tmp_samples[i]['label'])
+
+        batch_input_images = np.array(batch_input_images)
+        batch_partial_sequences = np.array(batch_partial_sequences)
+        batch_next_words = np.array(batch_next_words)
+
+        print([batch_input_images.shape, batch_partial_sequences.shape], batch_next_words.shape)
+
+        return [batch_input_images, batch_partial_sequences], batch_next_words
