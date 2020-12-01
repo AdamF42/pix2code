@@ -4,4 +4,4 @@ BATCH_SIZE = 64
 START_TOKEN = "<START>"
 END_TOKEN = "<END>"
 PLACEHOLDER = " "
-TOKEN_TO_EXCLUDE = [" ", "\n"]
+TOKEN_TO_EXCLUDE = [' ', '\n']

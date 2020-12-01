@@ -3,7 +3,7 @@ import os
 import numpy as np
 from gensim.models import Word2Vec
 
-from w2v_test.costants import START_TOKEN, END_TOKEN, PLACEHOLDER, CONTEXT_LENGTH, IMAGE_SIZE
+from w2v_test.costants import PLACEHOLDER, CONTEXT_LENGTH, IMAGE_SIZE
 from w2v_test.dataset.utils import get_preprocessed_img, show, get_token_from_gui
 
 

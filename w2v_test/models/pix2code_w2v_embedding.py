@@ -6,16 +6,19 @@ from keras.layers import Dense, Dropout, \
     RepeatVector, concatenate, \
     Conv2D, MaxPooling2D, Flatten
 
-from w2v_test.dataset.dataset import Utils, PLACEHOLDER, START_TOKEN, END_TOKEN
-
-CONTEXT_LENGTH = 48
+from w2v_test.costants import PLACEHOLDER, START_TOKEN, END_TOKEN, CONTEXT_LENGTH
+from w2v_test.dataset.utils import get_preprocessed_img
 
 
 class Pix2codeW2VEmbedding(tf.keras.models.Model):
 
-    def __init__(self, pretrained_weights,
-                 kernel_shape=(3, 3), activation='relu',
-                 context_length=CONTEXT_LENGTH, *args, **kwargs):
+    def __init__(self,
+                 pretrained_weights,
+                 kernel_shape=(3, 3),
+                 activation='relu',
+                 context_length=CONTEXT_LENGTH,
+                 dropout_ratio=0.25,
+                 *args, **kwargs):
 
         super().__init__(*args, **kwargs)
 
@@ -25,17 +28,17 @@ class Pix2codeW2VEmbedding(tf.keras.models.Model):
             Conv2D(32, kernel_shape, padding='valid', activation=activation),
             Conv2D(32, kernel_shape, padding='valid', activation=activation),
             MaxPooling2D(pool_size=(2, 2)),
-            Dropout(0.25),
+            Dropout(dropout_ratio),
 
             Conv2D(64, kernel_shape, padding='valid', activation=activation),
             Conv2D(64, kernel_shape, padding='valid', activation=activation),
             MaxPooling2D(pool_size=(2, 2)),
-            Dropout(0.25),
+            Dropout(dropout_ratio),
 
             Conv2D(128, kernel_shape, padding='valid', activation=activation),
             Conv2D(128, kernel_shape, padding='valid', activation=activation),
             MaxPooling2D(pool_size=(2, 2)),
-            Dropout(0.25),
+            Dropout(dropout_ratio),
 
             Flatten(),
             Dense(1024, activation='relu'),
@@ -61,8 +64,6 @@ class Pix2codeW2VEmbedding(tf.keras.models.Model):
 
     def call(self, inputs, **kwargs):
         img_inp, context_inp = inputs
-        print(img_inp)
-        print(context_inp)
 
         for layer in self.image_model_layers:
             img_inp = layer(img_inp)
@@ -97,8 +98,7 @@ class Pix2codeW2VEmbedding(tf.keras.models.Model):
             return np.argmax(probas)
 
         if isinstance(image, str):
-            img = np.array([Utils.get_preprocessed_img(image)])
-            # img = preprocess_image(image, img_size)
+            img = np.array([get_preprocessed_img(image)])
         elif isinstance(image, np.ndarray):
             img = image
         else:
@@ -107,12 +107,12 @@ class Pix2codeW2VEmbedding(tf.keras.models.Model):
         current_context = [w2v_model.wv.vocab[PLACEHOLDER].index] * (CONTEXT_LENGTH - 1)
         current_context.append(w2v_model.wv.vocab[START_TOKEN].index)
 
-        predictions = START_TOKEN
+        predictions = [START_TOKEN]
 
         for i in range(0, max_sentence_len):
 
             probas = model.predict(x=[img, np.array([current_context])])
-            prediction = sample(probas['code'][-1], temperature=0.7)
+            prediction = sample(probas[-1], temperature=0.7)
 
             new_context = []
             for j in range(1, CONTEXT_LENGTH):
@@ -122,7 +122,7 @@ class Pix2codeW2VEmbedding(tf.keras.models.Model):
 
             current_context = new_context
 
-            predictions += w2v_model.wv.index2word[prediction]
+            predictions.append(w2v_model.wv.index2word[prediction])
 
             if w2v_model.wv.index2word[prediction] == END_TOKEN:
                 break
