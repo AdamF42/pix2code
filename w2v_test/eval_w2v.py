@@ -15,13 +15,15 @@ print("################################## GENSIM ###############################
 
 print('\nPreparing the sentences...')
 
-tokens = get_token_sequences_with_max_seq_len(IMG_W2V_TRAIN_DIR)
+tokens = get_token_sequences_with_max_seq_len(IMG_W2V_TRAIN_DIR, [])
 
 max_sentence_len = tokens['max_sentence_len']
 sentences = tokens['sentences']
 
 print("MAX SENTENCE LENGHT: " + str(max_sentence_len))
 print("NUMBER OF SENTENCIES: " + str(len(sentences)))
+
+print(sentences)
 
 print('\nLoad word2vec...')
 word_model: Word2Vec = gensim.models.Word2Vec.load('/home/adamf42/Projects/pix2code/w2v_test/word2vec.model')

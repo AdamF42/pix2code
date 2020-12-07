@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 
-from w2v_test.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE
+from w2v_test.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE, PLACEHOLDER, CARRIAGE_RETURN
 
 
 def sparsify(label_vector, output_size):
@@ -34,14 +34,14 @@ def show(image):
     cv2.destroyWindow("view")
 
 
-def get_token_sequences_with_max_seq_len(img_dir):
+def get_token_sequences_with_max_seq_len(img_dir, tokens_to_exclude=TOKEN_TO_EXCLUDE):
     max_sentence_len = 0
     sequences = []
     for filename in os.listdir(img_dir):
         if not filename.endswith(".gui"):
             continue
         gui = open(f'{img_dir}/{filename}', 'r')
-        token_sequences = get_token_from_gui(gui)
+        token_sequences = get_token_from_gui(gui, tokens_to_exclude)
         sequences.append(token_sequences)
     for sequence in sequences:
         if len(sequence) > max_sentence_len:
@@ -60,6 +60,8 @@ def get_token_from_gui(gui, tokens_to_exclude=TOKEN_TO_EXCLUDE):
             .replace(",", " , ")
         tokens = line.split(" ")
         tokens = map(lambda x: " " if x == "" else x, tokens)
+        tokens = map(lambda x: PLACEHOLDER if x == " " else x, tokens)
+        tokens = map(lambda x: CARRIAGE_RETURN if x == "\n" else x, tokens)
         tokens = filter(lambda x: False if x in tokens_to_exclude else True, tokens)
         for token in tokens:
             token_sequence.append(token)
