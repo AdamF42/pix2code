@@ -1,0 +1,127 @@
+{
+    "btn-orange": {
+        "btn-red": 131,
+        "btn-green": 54,
+        "row": 11,
+        "text": 2,
+        ",": 1
+    },
+    "btn-green": {
+        "btn-red": 151,
+        "btn-orange": 92,
+        "row": 2,
+        "text": 2,
+        "double": 1,
+        "}": 1,
+        ",": 1,
+        "quadruple": 1
+    },
+    "btn-red": {
+        "btn-orange": 208,
+        "btn-green": 90,
+        "text": 3,
+        "row": 5,
+        "double": 3
+    },
+    "single": {
+        "double": 17,
+        "quadruple": 3,
+        "row": 1,
+        "small-title": 1,
+        ",": 2
+    },
+    "}": {
+        "double": 18,
+        "{": 23,
+        "quadruple": 13,
+        ",": 10,
+        "btn-orange": 3,
+        "btn-red": 1,
+        "small-title": 2,
+        "row": 1,
+        "single": 2,
+        "text": 1
+    },
+    "row": {
+        "{": 18,
+        "<END>": 4,
+        "btn-inactive": 1,
+        "}": 2,
+        "btn-active": 1,
+        ",": 1,
+        "quadruple": 1,
+        "btn-orange": 1
+    },
+    "{": {
+        "small-title": 18,
+        "text": 19,
+        "<END>": 6,
+        "}": 8,
+        ",": 6,
+        "btn-green": 1,
+        "quadruple": 1,
+        "row": 1
+    },
+    "double": {
+        ",": 7,
+        "single": 9,
+        "row": 1,
+        "btn-red": 1,
+        "}": 4,
+        "quadruple": 2,
+        "btn-inactive": 1,
+        "small-title": 1
+    },
+    "small-title": {
+        ",": 18,
+        "single": 1,
+        "quadruple": 4,
+        "double": 2,
+        "btn-inactive": 1,
+        "text": 4,
+        "}": 1,
+        "{": 2
+    },
+    ",": {
+        "btn-green": 6,
+        "}": 24,
+        "btn-red": 7,
+        "btn-orange": 5,
+        "{": 9,
+        "small-title": 2,
+        "text": 1,
+        "double": 1
+    },
+    "text": {
+        "}": 18,
+        "small-title": 7,
+        "row": 2,
+        "btn-orange": 3,
+        "btn-red": 1,
+        ",": 1,
+        "{": 1
+    },
+    "quadruple": {
+        ",": 10,
+        "double": 7,
+        "}": 3,
+        "<END>": 1,
+        "row": 1,
+        "btn-red": 2,
+        "btn-orange": 1,
+        "small-title": 2,
+        "{": 1
+    },
+    "<END>": {
+        "{": 15,
+        "row": 5,
+        "}": 1,
+        ",": 1
+    },
+    "btn-inactive": {
+        "btn-active": 1
+    },
+    "btn-active": {
+        "btn-inactive": 2
+    }
+}
