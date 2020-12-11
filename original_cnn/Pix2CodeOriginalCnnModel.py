@@ -40,18 +40,15 @@ class Pix2CodeOriginalCnnModel(tf.keras.models.Model):
             Dropout(0.3),
             [Dense(1, name=output_names[i], activation=activation)
              for i in range(self.output_length)]
-            # RepeatVector(context_length)
         ]
 
     def call(self, inputs, **kwargs):
-
+        inp = inputs['img_data']
+        # print(f"INPUT SHAPE: {inp.shape}")
         for layer in self.image_model_layers[:-1]:
-            inputs = layer(inputs)
-
+            inp = layer(inp)
         last_layers = self.image_model_layers[-1]
-        out = {name + "_count": layer(inputs)
-               for name, layer in zip(self.layer_output_names, last_layers)}
-
+        out = {name + "_count": layer(inp) for name, layer in zip(self.layer_output_names, last_layers)}
         return out
 
     def compile(self, loss='mse',
