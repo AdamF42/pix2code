@@ -3,6 +3,7 @@ import os
 import numpy as np
 
 from w2v_test.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE, PLACEHOLDER, CARRIAGE_RETURN
+import cv2
 
 
 def sparsify(label_vector, output_size):
@@ -18,12 +19,15 @@ def sparsify(label_vector, output_size):
 
 
 def get_preprocessed_img(img_path, image_size=IMAGE_SIZE):
-    import cv2
-    img = cv2.imread(img_path)
-    img = cv2.resize(img, (image_size, image_size))
-    img = img.astype('float32')
-    img /= 255
-    return img
+    if img_path.endswith("png"):
+        img = cv2.imread(img_path)
+        img = cv2.resize(img, (image_size, image_size))
+        img = img.astype('float32')
+        img /= 255
+        return img
+    elif img_path.endswith("npz"):
+        return np.load(img_path)["features"]
+
 
 
 def show(image):
