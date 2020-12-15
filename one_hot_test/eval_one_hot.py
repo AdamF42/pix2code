@@ -50,6 +50,8 @@ new_model = load_model("pix2code_new_one_hot_RMS")
 
 print("################################## EVAL ##################################")
 
+score_dict = {}
+
 
 def create_eval_dict():
     res_eval = {}  # chiave nome immagine, valore lista di stringhe (righe)
@@ -108,6 +110,23 @@ def print_accuracy(len_difference, tot_correct, tot_error, tot_tot):
     assert round(tot_correct_percentuale, 2) + round(tot_error_percentuale, 2) == 100.0
 
 
+def update_score(actual_token, predicted_token):
+    if (actual_token in score_dict):
+        score_dict[actual_token].append(predicted_token)
+    else:
+        score_dict[actual_token] = [predicted_token]
+
+
+def elaborate_score():
+    for key, value in score_dict.items():
+        dict = {}
+        for v in value:
+            if v in dict:
+                dict[v] = dict[v] + 1
+            else:
+                dict[v] = 1
+        score_dict[key] = dict
+
 tot_correct = 0
 tot_error = 0
 tot_tot = 0
@@ -130,5 +149,7 @@ for key in res_eval:
 
 print_accuracy(len_difference, tot_correct, tot_error, tot_tot)
 
+elaborate_score()
 
+print(score_dict)
 
