@@ -75,7 +75,7 @@ class Dataset:
 
         token_sequence = [START_TOKEN]
         for line in gui:
-            line = line.replace(",", " ,").replace("\n", " \n")
+            line = line.replace(",", " ,").replace("\n", " " + CARRIAGE_RETURN)
             tokens = line.split(" ")
             for token in tokens:
                 if token not in TOKEN_TO_EXCLUDE:
