@@ -8,7 +8,7 @@ from w2v_test.generator.generator import DataGenerator
 from w2v_test.models.pix2code_w2v_embedding import Pix2codeW2VEmbedding
 
 IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/all_data'
-IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/eval_set'
+IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/training_set'
 
 print("################################## GENSIM ##################################")
 
@@ -50,6 +50,7 @@ new_model.compile()
 labels, img_paths = Dataset.load_paths_only(IMG_PATH)
 
 generator = DataGenerator(img_paths, labels, word_model)
+
 
 
 # shape = [(None, 256, 256, 3), (None, 48)]

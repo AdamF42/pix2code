@@ -113,6 +113,7 @@ class Pix2codeW2VEmbedding(tf.keras.models.Model):
 
             probas = model.predict(x=[img, np.array([current_context])])
             prediction = sample(probas[-1], temperature=0.7)
+            # prediction = np.argmax(probas[-1])
 
             new_context = []
             for j in range(1, CONTEXT_LENGTH):

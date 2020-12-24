@@ -3,7 +3,7 @@ from original_cnn.costants import TOKENS_TO_INDEX
 from original_cnn.generator import DataGenerator
 from w2v_test.dataset.dataset import Dataset
 
-IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/training_features'
+IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/single'
 
 voc = list(TOKENS_TO_INDEX.keys())
 output_names=[]
@@ -31,6 +31,6 @@ labels, img_paths = Dataset.load_paths_only(IMG_PATH)
 
 generator = DataGenerator(img_paths, labels, output_names, batch_size=2)
 
-# X,y = generator.__getitem__(0)
-
-new_model.fit(generator, epochs=10)
+X,y = generator.__getitem__(0)
+print(X,y)
+# new_model.fit(generator, epochs=10)

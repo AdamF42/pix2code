@@ -8,14 +8,14 @@ from tensorflow.python.keras.models import load_model
 from w2v_test.dataset.utils import get_token_sequences_with_max_seq_len, get_token_from_gui
 from w2v_test.models.pix2code_w2v_embedding import Pix2codeW2VEmbedding
 
-IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/prove'
-IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/prove'
+IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/single'
+IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/single'
 
 print("################################## GENSIM ##################################")
 
 print('\nPreparing the sentences...')
 
-tokens = get_token_sequences_with_max_seq_len(IMG_W2V_TRAIN_DIR, [])
+tokens = get_token_sequences_with_max_seq_len(IMG_W2V_TRAIN_DIR)
 
 max_sentence_len = tokens['max_sentence_len']
 sentences = tokens['sentences']
