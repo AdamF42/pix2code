@@ -1,20 +1,21 @@
 import numpy as np
 from tensorflow.python.keras.utils.data_utils import Sequence
 
-from w2v_test.costants import IMAGE_SIZE, BATCH_SIZE
-from w2v_test.dataset.utils import get_preprocessed_img, get_token_from_gui
+from w2v_test.costants import BATCH_SIZE, IMAGE_SIZE, TOKEN_TO_EXCLUDE, COMMA, START_TOKEN, END_TOKEN
+from w2v_test.dataset.utils import get_preprocessed_img, get_token_from_gui, get_output_names
 
 
 class DataGenerator(Sequence):
     'Generates data for Keras'
 
-    def __init__(self, img_paths, gui_paths, output_names,
+    def __init__(self, img_paths, gui_paths, output_names, tokens_to_exclude,
                  samples = None, shuffle=True, batch_size=BATCH_SIZE):
         'Initialization'
         self.output_names = output_names
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.samples = samples
+        self.tokens_to_exclude = tokens_to_exclude
         if samples is None:
             self.samples = self.create_samples(img_paths, gui_paths)
         self.on_epoch_end()
@@ -49,13 +50,8 @@ class DataGenerator(Sequence):
             img = get_preprocessed_img(img_paths[i], IMAGE_SIZE)
 
             gui = open(gui_paths[i], 'r')
-            token_sequence = []
-            tokens = filter(lambda x: False if x in ["<START>", "<END>"] else True, get_token_from_gui(gui))
-            tokens = map(lambda x: "open_bracket" if x == "{" else x, tokens)
-            tokens = map(lambda x: "close_bracket" if x == "}" else x, tokens)
-            tokens = map(lambda x: "comma" if x == "," else x, tokens)
-            for token in tokens:
-                token_sequence.append(token)
+            token_sequence = get_token_from_gui(gui, self.tokens_to_exclude)
+            token_sequence = get_output_names(token_sequence)
 
             tokens_count = {}
             for name in self.output_names:

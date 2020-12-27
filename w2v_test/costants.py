@@ -5,4 +5,11 @@ START_TOKEN = "<START>"
 END_TOKEN = "<END>"
 PLACEHOLDER = "<PLACEHOLDER>"
 CARRIAGE_RETURN = "<CARRIAGE_RETURN>"
+COMMA = ","
 TOKEN_TO_EXCLUDE = [PLACEHOLDER, CARRIAGE_RETURN]
+
+CNN_OUTPUT_NAMES = {
+    "{": "open_bracket",
+    "}": "close_bracket",
+    ",": "comma"
+}

@@ -55,7 +55,7 @@ class Pix2CodeOriginalCnnModel(tf.keras.models.Model):
                 optimizer=tf.keras.optimizers.RMSprop(lr=0.0002, clipvalue=1.0), metrics=None,
                 **kwargs):
         if metrics is None:
-            metrics = ['accuracy']
+            metrics = ['MeanSquaredError']
         self.output_names = sorted([key + "_count" for key in self.layer_output_names])
         return super().compile(loss=loss, optimizer=optimizer, metrics=metrics, **kwargs)
 

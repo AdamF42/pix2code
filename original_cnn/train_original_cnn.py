@@ -1,30 +1,27 @@
+from functools import reduce
+
 from tensorflow.python.keras.callbacks import EarlyStopping
 from tensorflow.python.keras.utils.data_utils import iter_sequence_infinite
 
-
-from original_cnn.Pix2CodeOriginalCnnModel import Pix2CodeOriginalCnnModel
-from original_cnn.costants import TOKENS_TO_INDEX
-from original_cnn.generator import DataGenerator
+from Pix2CodeOriginalCnnModel import Pix2CodeOriginalCnnModel
+from generator import DataGenerator
 from w2v_test.dataset.dataset import Dataset
+from w2v_test.costants import TOKEN_TO_EXCLUDE, END_TOKEN, START_TOKEN, COMMA, CNN_OUTPUT_NAMES
+from w2v_test.dataset.utils import get_token_sequences_with_max_seq_len
 
-IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/single'
-IMG_PATH_EVAL = '/home/adamf42/Projects/pix2code/datasets/web/single'
+IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/all_data'
+IMG_PATH = '/home/adamf42/Projects/pix2code/datasets/web/training_features'
+IMG_PATH_EVAL = '/home/adamf42/Projects/pix2code/datasets/web/training_features'
 
-voc = list(TOKENS_TO_INDEX.keys())
-output_names=[]
-names = map(lambda x: "open_bracket" if x == "{" else x, voc)
-names = map(lambda x: "close_bracket" if x == "}" else x, names)
-names = map(lambda x: "comma" if x == "," else x, names)
-for name in names:
-    output_names.append(name)
+tokens_to_exclude = TOKEN_TO_EXCLUDE + [COMMA, START_TOKEN, END_TOKEN]
 
-# print(output_names)
-# print(len(output_names))
+tokens = get_token_sequences_with_max_seq_len(IMG_W2V_TRAIN_DIR, tokens_to_exclude)
+voc = {token for token in reduce(lambda x, y: x + y, tokens['sentences'])}
+output_names = list(map(lambda x: CNN_OUTPUT_NAMES[x] if x in CNN_OUTPUT_NAMES.keys() else x, voc))
 
 new_model = Pix2CodeOriginalCnnModel(output_names)
 
 new_model.compile()
-
 
 # shape = (None, 256, 256, 3)
 
@@ -36,15 +33,8 @@ new_model.compile()
 labels, img_paths = Dataset.load_paths_only(IMG_PATH)
 labels_eval, img_paths_eval = Dataset.load_paths_only(IMG_PATH_EVAL)
 
-generator = iter_sequence_infinite(DataGenerator(img_paths, labels, output_names, batch_size=32))
-generator_eval = iter_sequence_infinite(DataGenerator(img_paths_eval, labels_eval, output_names, batch_size=32))
-
-# X,y = generator.__getitem__(0)
-# print(X,y)
-# new_model.fit(generator, epochs=10)
-
-# import matplotlib.pyplot as plt
-# import numpy
+generator = iter_sequence_infinite(DataGenerator(img_paths, labels, output_names, tokens_to_exclude, batch_size=32))
+generator_eval = iter_sequence_infinite(DataGenerator(img_paths_eval, labels_eval, output_names, tokens_to_exclude, batch_size=32))
 
 
 early_stopping = EarlyStopping(

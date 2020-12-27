@@ -1,9 +1,10 @@
 import os
 
+import cv2
 import numpy as np
 
-from w2v_test.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE, PLACEHOLDER, CARRIAGE_RETURN
-import cv2
+from w2v_test.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE, PLACEHOLDER, CARRIAGE_RETURN, \
+    CNN_OUTPUT_NAMES
 
 
 def sparsify(label_vector, output_size):
@@ -27,7 +28,6 @@ def get_preprocessed_img(img_path, image_size=IMAGE_SIZE):
         return img
     elif img_path.endswith("npz"):
         return np.load(img_path)["features"]
-
 
 
 def show(image):
@@ -63,11 +63,12 @@ def get_token_from_gui(gui, tokens_to_exclude=TOKEN_TO_EXCLUDE):
             .replace("}", " } ") \
             .replace(",", " , ")
         tokens = line.split(" ")
-        tokens = map(lambda x: " " if x == "" else x, tokens)
-        tokens = map(lambda x: PLACEHOLDER if x == " " else x, tokens)
-        tokens = map(lambda x: CARRIAGE_RETURN if x == "\n" else x, tokens)
-        tokens = filter(lambda x: False if x in tokens_to_exclude else True, tokens)
-        for token in tokens:
-            token_sequence.append(token)
+        tokens = list(map(lambda x: " " if x == "" else x, tokens))
+        tokens = list(map(lambda x: PLACEHOLDER if x == " " else x, tokens))
+        tokens = list(map(lambda x: CARRIAGE_RETURN if x == "\n" else x, tokens))
+        token_sequence = token_sequence + tokens
     token_sequence.append(END_TOKEN)
-    return token_sequence
+    return list(filter(lambda x: False if x in tokens_to_exclude else True, token_sequence))
+
+def get_output_names(voc_list, out_names_dict = CNN_OUTPUT_NAMES):
+    return list(map(lambda x: out_names_dict[x] if x in out_names_dict.keys() else x, voc_list))
