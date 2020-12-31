@@ -5,7 +5,7 @@ from keras.layers import Dense, Dropout, \
     Conv2D, MaxPooling2D, Flatten
 
 from w2v_test.costants import PLACEHOLDER, START_TOKEN, END_TOKEN, CONTEXT_LENGTH
-from w2v_test.dataset.utils import get_preprocessed_img
+from utils.utils import get_preprocessed_img
 
 
 class Pix2codeOneHotEmbedding(tf.keras.models.Model):

@@ -3,7 +3,7 @@ import os
 from tensorflow.python.keras.models import load_model
 from one_hot_test.dataset.Dataset import Dataset
 from one_hot_test.models.pix2code_one_hot_embedding import Pix2codeOneHotEmbedding
-from w2v_test.dataset.utils import get_token_sequences_with_max_seq_len, get_token_from_gui
+from utils.utils import get_token_sequences_with_max_seq_len, get_token_from_gui
 
 IMG_ONEHOT_TRAIN_DIR = '../datasets/web/training_set'
 IMG_PATH = '../datasets/web/mini_eval'  # eval_set

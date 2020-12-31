@@ -2,7 +2,7 @@ import numpy as np
 from tensorflow.python.keras.utils.data_utils import Sequence
 
 from w2v_test.costants import IMAGE_SIZE, CONTEXT_LENGTH, PLACEHOLDER, BATCH_SIZE
-from w2v_test.dataset.utils import get_preprocessed_img, get_token_from_gui
+from utils.utils import get_preprocessed_img, get_token_from_gui
 
 
 class DataGenerator(Sequence):

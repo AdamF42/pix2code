@@ -5,7 +5,7 @@ import gensim
 from gensim.models import Word2Vec
 from tensorflow.python.keras.models import load_model
 
-from w2v_test.dataset.utils import get_token_sequences_with_max_seq_len, get_token_from_gui
+from utils.utils import get_token_sequences_with_max_seq_len, get_token_from_gui
 from w2v_test.models.pix2code_w2v_embedding import Pix2codeW2VEmbedding
 
 IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/single'

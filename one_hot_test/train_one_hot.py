@@ -1,5 +1,5 @@
 from one_hot_test.dataset.Dataset import Dataset
-from w2v_test.dataset.utils import get_token_sequences_with_max_seq_len
+from utils.utils import get_token_sequences_with_max_seq_len
 from one_hot_test.generator.generator import DataGenerator
 from one_hot_test.models.pix2code_one_hot_embedding import Pix2codeOneHotEmbedding
 
