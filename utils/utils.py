@@ -3,6 +3,7 @@ import pickle
 from pathlib import Path
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -99,3 +100,41 @@ def eval_cnn_model(model_instance, data, words_to_include, index_value='accuracy
     ground_truth = pd.concat(correct_y_list, axis=0)
     ratio_correct_pred = pd.DataFrame((predictions.round() == ground_truth).mean(), columns=[index_value]).T
     return ratio_correct_pred, ground_truth, predictions
+
+
+def inspect_layer(model_instance, img, name, output_names):
+    img_name = name['name']
+    img_data = img['img_data']
+    pred_all = model_instance.predict(img)
+    pred_all = {key: val[0] for key, val in pred_all.items()}
+    n_plots = int(len(pred_all) / 2) + 1
+    n_rows = np.math.ceil(n_plots / 3)
+    fig, ax = plt.subplots(n_rows, 3, figsize=(15, 5 * n_rows), squeeze=False)
+
+    # TODO: fix color
+    # print(img_data.shape)
+    # test = cv2.cvtColor(img_data, cv2.COLOR_BGR2RGB)
+    # print(test.shape)
+    test1 = cv2.imread(img_name)
+    test1 = cv2.resize(test1, (256, 256))
+
+    ax[0, 0].imshow(test1)
+    ax[0, 0].set_title(img_name.split('/')[-1])
+    for i, word in enumerate(output_names, start=1):
+        if n_rows > 1:
+            ax[int(i / 3), i % 3].imshow(pred_all['img_out_{}'.format(word)].squeeze(-1))
+            ax[int(i / 3), i % 3].set_title("{}:{}".format(word, pred_all[word + "_count"][0]))
+    plt.savefig(img_name.split('/')[-1])
+    plt.show()
+
+
+def plot_cnn_history(history):
+    out = list(filter(lambda x: False if x.startswith('val_') else True, history.history.keys()))
+    for name in out:
+        plt.plot(history.history[name])
+        plt.plot(history.history['val_' + name])
+        plt.title(name)
+        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'test'], loc='upper left')
+        plt.show()

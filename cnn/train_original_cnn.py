@@ -1,7 +1,7 @@
 from tensorflow.python.keras.callbacks import EarlyStopping
 from tensorflow.python.keras.utils.data_utils import iter_sequence_infinite
 
-from CnnOriginalModel import CnnOriginalModel
+from CnnModelOriginal import CnnModelOriginal
 from generator import DataGenerator
 from utils.utils import load_pickle
 from w2v_test.costants import TOKEN_TO_EXCLUDE, END_TOKEN, START_TOKEN, COMMA
@@ -25,7 +25,7 @@ generator_eval = iter_sequence_infinite(
 
 print("################################## MODEL ######################################")
 
-new_model = CnnOriginalModel(output_names)
+new_model = CnnModelOriginal(output_names)
 
 new_model.compile()
 

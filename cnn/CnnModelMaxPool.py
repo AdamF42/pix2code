@@ -2,7 +2,7 @@ import tensorflow as tf
 from keras.layers import Dropout, \
     Conv2D, MaxPooling2D
 
-from cnn.CnnModel import CounterUnit
+from cnn.CnnModel import CnnCounterUnit
 
 
 class OriginalCnnUnit(tf.keras.layers.Layer):
@@ -55,10 +55,10 @@ class CnnModelMaxPool(tf.keras.Model):
         self.output_length = len(image_count_words)
         self.image_out = image_out
         self.image_count_words = image_count_words
-        self.shallow_cnn_unit = CnnUnit(image_count_words=image_count_words, kernel_shape=kernel_shape,
+        self.shallow_cnn_unit = OriginalCnnUnit(image_count_words=image_count_words, kernel_shape=kernel_shape,
                                         dropout_ratio=dropout_ratio, activation=activation, name='cnn_unit')
-        self.parallel_counter_unit = CounterUnit(layer_size=dense_layer_size, activation=activation,
-                                                 name='counter_unit')
+        self.parallel_counter_unit = CnnCounterUnit(layer_size=dense_layer_size, activation=activation,
+                                                    name='counter_unit')
 
     def call(self, inputs, **kwargs):
         inp = inputs['img_data']

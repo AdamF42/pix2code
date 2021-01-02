@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, Dropout
 from tensorflow.keras.optimizers import RMSprop
 
-from cnn.CounterUnit import CounterUnit
+from cnn.CnnCounterUnit import CnnCounterUnit
 
 
 class CnnUnit(tf.keras.layers.Layer):
@@ -54,8 +54,8 @@ class CnnModel(tf.keras.Model):
         self.image_count_words = image_count_words
         self.shallow_cnn_unit = CnnUnit(image_count_words=image_count_words, kernel_shape=kernel_shape,
                                         dropout_ratio=dropout_ratio, activation=activation, name='cnn_unit')
-        self.parallel_counter_unit = CounterUnit(layer_size=dense_layer_size, activation=activation,
-                                                 name='counter_unit')
+        self.parallel_counter_unit = CnnCounterUnit(layer_size=dense_layer_size, activation=activation,
+                                                    name='counter_unit')
 
     def call(self, inputs, **kwargs):
         inp = inputs['img_data']

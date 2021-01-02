@@ -2,7 +2,7 @@ import tensorflow as tf
 from keras.layers import Dense, Flatten
 
 
-class CounterUnit(tf.keras.layers.Layer):
+class CnnCounterUnit(tf.keras.layers.Layer):
     def __init__(self, layer_size, activation='relu', **kwargs):
         super().__init__(**kwargs)
         self.main_layers = [

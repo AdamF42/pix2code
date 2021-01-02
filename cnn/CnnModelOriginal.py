@@ -5,7 +5,7 @@ from keras.layers import Dense, Dropout, \
     Conv2D, MaxPooling2D, Flatten
 
 
-class CnnOriginalModel(tf.keras.models.Model):
+class CnnModelOriginal(tf.keras.models.Model):
 
     def get_config(self):
         pass
