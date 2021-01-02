@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from utils.utils import get_preprocessed_img, show
-from w2v_test.costants import *
+from utils.costants import *
 
 from one_hot_test.dataset.Vocabulary import Vocabulary
 

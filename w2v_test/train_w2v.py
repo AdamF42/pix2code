@@ -4,7 +4,7 @@ from gensim.models import Word2Vec
 
 from utils.dataset import Dataset
 from utils.utils import load_pickle
-from w2v_test.costants import PLACEHOLDER
+from utils.costants import PLACEHOLDER
 from w2v_test.generator.generator import DataGenerator
 from w2v_test.models.Pix2codeW2VEmbedding import Pix2codeW2VEmbedding
 

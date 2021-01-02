@@ -5,7 +5,8 @@ import gensim
 from gensim.models import Word2Vec
 from tensorflow.python.keras.models import load_model
 
-from utils.utils import get_token_sequences_with_max_seq_len, get_token_from_gui
+from utils.utils import get_token_from_gui, load_pickle
+from utils.costants import PLACEHOLDER
 from w2v_test.models.Pix2codeW2VEmbedding import Pix2codeW2VEmbedding
 
 IMG_W2V_TRAIN_DIR = '/home/adamf42/Projects/pix2code/datasets/web/single'
@@ -15,20 +16,23 @@ print("################################## GENSIM ###############################
 
 print('\nPreparing the sentences...')
 
-tokens = get_token_sequences_with_max_seq_len(IMG_W2V_TRAIN_DIR)
-
-max_sentence_len = tokens['max_sentence_len']
-sentences = tokens['sentences']
-
+# tokens_sequences = get_token_sequences_with_max_seq_len(IMG_W2V_TRAIN_DIR, is_with_output_name=True)
+tokens_sequences = load_pickle('../pickle/tokens_sequences_no_spaces.pickle')
+# save_pickle(tokens_sequences, '../pickle/tokens_sequences_no_spaces.pickle')
+max_sentence_len = tokens_sequences['max_sentence_len']
+sentences = tokens_sequences['sentences']
+sentences.append([PLACEHOLDER])
 print("MAX SENTENCE LENGHT: " + str(max_sentence_len))
 print("NUMBER OF SENTENCIES: " + str(len(sentences)))
 
-print(sentences)
-
 print('\nLoad word2vec...')
-word_model: Word2Vec = gensim.models.Word2Vec.load('/home/adamf42/Projects/pix2code/w2v_test/word2vec.model')
+# word_model: Word2Vec = gensim.models.Word2Vec(sentences, size=100, min_count=1, window=5, iter=800)
+word_model: Word2Vec = gensim.models.Word2Vec.load('../instances/word2vec_no_spaces_output_name.model')
+# word_model.save('../instances/word2vec_no_spaces.model')
 pretrained_weights = word_model.wv.vectors
 vocab_size, emdedding_size = pretrained_weights.shape
+print('Result embedding shape:', pretrained_weights.shape)
+print("emdedding_size: {}, vocab_size: {}".format(emdedding_size, vocab_size))
 
 print("################################## MODEL ##################################")
 

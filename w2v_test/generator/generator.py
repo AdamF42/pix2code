@@ -4,7 +4,7 @@ from tensorflow.python.keras.utils.data_utils import Sequence
 from tqdm import tqdm
 
 from utils.utils import get_preprocessed_img, get_token_from_gui, get_output_names
-from w2v_test.costants import IMAGE_SIZE, CONTEXT_LENGTH, PLACEHOLDER, BATCH_SIZE
+from utils.costants import IMAGE_SIZE, CONTEXT_LENGTH, PLACEHOLDER, BATCH_SIZE
 
 
 class DataGenerator(Sequence):

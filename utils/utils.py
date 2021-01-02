@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.manifold import TSNE
 from tqdm import tqdm
 
-from w2v_test.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE, PLACEHOLDER, CARRIAGE_RETURN, \
+from utils.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE, PLACEHOLDER, CARRIAGE_RETURN, \
     CNN_OUTPUT_NAMES
 
 

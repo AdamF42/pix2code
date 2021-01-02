@@ -1,7 +1,7 @@
 import numpy as np
 from tensorflow.python.keras.utils.data_utils import Sequence
 
-from w2v_test.costants import BATCH_SIZE, IMAGE_SIZE
+from utils.costants import BATCH_SIZE, IMAGE_SIZE
 from utils.utils import get_preprocessed_img, get_token_from_gui, get_output_names
 
 

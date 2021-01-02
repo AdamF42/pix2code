@@ -6,7 +6,7 @@ from keras.layers import Dense, Dropout, \
     RepeatVector, concatenate, \
     Conv2D, MaxPooling2D, Flatten
 
-from w2v_test.costants import PLACEHOLDER, START_TOKEN, END_TOKEN, CONTEXT_LENGTH
+from utils.costants import PLACEHOLDER, START_TOKEN, END_TOKEN, CONTEXT_LENGTH
 from utils.utils import get_preprocessed_img
 
 

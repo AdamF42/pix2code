@@ -1,5 +1,5 @@
 import numpy as np
-from w2v_test.costants import *
+from utils.costants import *
 
 
 class Vocabulary:

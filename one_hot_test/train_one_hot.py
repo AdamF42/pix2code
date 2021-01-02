@@ -4,7 +4,7 @@ from one_hot_test.generator.generator import DataGenerator
 from one_hot_test.models.pix2code_one_hot_embedding import Pix2codeOneHotEmbedding
 
 
-IMG_ONEHOT_TRAIN_DIR = '../datasets/web/eval_set'  # training_set
+IMG_ONEHOT_TRAIN_DIR = '../datasets/web/all_data'  # training_set
 
 print("################################## DATASET ##################################")
 

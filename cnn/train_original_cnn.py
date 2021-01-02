@@ -4,7 +4,7 @@ from tensorflow.python.keras.utils.data_utils import iter_sequence_infinite
 from CnnModelOriginal import CnnModelOriginal
 from generator import DataGenerator
 from utils.utils import load_pickle
-from w2v_test.costants import TOKEN_TO_EXCLUDE, END_TOKEN, START_TOKEN, COMMA
+from utils.costants import TOKEN_TO_EXCLUDE, END_TOKEN, START_TOKEN, COMMA
 from utils.dataset import Dataset
 
 IMG_PATH = '../datasets/web/eval_features'

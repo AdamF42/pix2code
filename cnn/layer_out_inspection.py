@@ -1,7 +1,7 @@
 from cnn.CnnModel import CnnModel
 from cnn.generator import DataGenerator
 from utils.utils import load_pickle, inspect_layer
-from w2v_test.costants import TOKEN_TO_EXCLUDE, COMMA, START_TOKEN, END_TOKEN
+from utils.costants import TOKEN_TO_EXCLUDE, COMMA, START_TOKEN, END_TOKEN
 from utils.dataset import Dataset
 
 output_names = load_pickle('../pickle/output_names.pickle')
