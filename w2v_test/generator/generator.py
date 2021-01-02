@@ -1,19 +1,22 @@
 import numpy as np
 from gensim.models import Word2Vec
 from tensorflow.python.keras.utils.data_utils import Sequence
+from tqdm import tqdm
 
+from utils.utils import get_preprocessed_img, get_token_from_gui, get_output_names
 from w2v_test.costants import IMAGE_SIZE, CONTEXT_LENGTH, PLACEHOLDER, BATCH_SIZE
-from utils.utils import get_preprocessed_img, get_token_from_gui
 
 
 class DataGenerator(Sequence):
     'Generates data for Keras'
 
-    def __init__(self, img_paths, gui_paths, word_model: Word2Vec, shuffle=True, batch_size=BATCH_SIZE):
+    def __init__(self, img_paths, gui_paths, word_model: Word2Vec, shuffle=True, batch_size=BATCH_SIZE,
+                 is_with_output_name=False):
         'Initialization'
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.word_model = word_model
+        self.is_with_output_name = is_with_output_name
         self.samples = self.create_samples(img_paths, gui_paths)
         self.on_epoch_end()
 
@@ -53,13 +56,15 @@ class DataGenerator(Sequence):
         contexts = []
         labels = []
         # Generate data
-        for i in range(0, len(gui_paths)):
+        for i in tqdm(range(0, len(gui_paths)), desc="Creating samples"):
+            # for i in range(0, len(gui_paths)):
             img = get_preprocessed_img(img_paths[i], IMAGE_SIZE)
 
             gui = open(gui_paths[i], 'r')
 
             token_sequence = get_token_from_gui(gui)
-
+            if self.is_with_output_name:
+                token_sequence = get_output_names(token_sequence)
             suffix = [PLACEHOLDER] * CONTEXT_LENGTH
 
             a = np.concatenate([suffix, token_sequence])
