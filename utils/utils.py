@@ -3,14 +3,17 @@ import pickle
 from pathlib import Path
 
 import cv2
+import distance
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.manifold import TSNE
 from tqdm import tqdm
+import re
 
 from utils.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE, PLACEHOLDER, CARRIAGE_RETURN, \
     CNN_OUTPUT_NAMES
+from utils.vocabulary import Vocabulary
 
 
 def sparsify(label_vector, output_size):
@@ -47,7 +50,7 @@ def show(image):
 def get_token_sequences_with_max_seq_len(img_dir, tokens_to_exclude=TOKEN_TO_EXCLUDE, is_with_output_name=False):
     max_sentence_len = 0
     sequences = []
-    for filename in os.listdir(img_dir):
+    for filename in tqdm(os.listdir(img_dir), desc="Loading gui files"):
         if not filename.endswith(".gui"):
             continue
         gui = open(f'{img_dir}/{filename}', 'r')
@@ -110,6 +113,43 @@ def eval_cnn_model(model_instance, data, words_to_include, index_value='accuracy
     ground_truth = pd.concat(correct_y_list, axis=0)
     ratio_correct_pred = pd.DataFrame((predictions.round() == ground_truth).mean(), columns=[index_value]).T
     return ratio_correct_pred, ground_truth, predictions
+
+
+def calc_code_error_ratio(ground_truth, prediction):
+    return distance.levenshtein(
+        ground_truth.split(" "), prediction.split(" ")) / len(ground_truth.split(" "))
+
+
+def button_correct(str1, str2):
+    return all(
+        [[occurence.start() for occurence in re.finditer(button_name, str1)] == [occurence.start() for occurence in
+                                                                                 re.finditer(button_name, str2)]
+         for button_name in ['btn-green', 'btn-orange', 'btn-red']])
+
+
+def eval_code_error(model_instance, npz_paths, voc:Vocabulary):
+    error_list = []
+    prediction_list = []
+    ground_truth_list = []
+    for path in tqdm(npz_paths):
+        temp = np.load(path, allow_pickle=True)
+        pred_code = model_instance.predict_image(temp['img_data'], voc)
+        ground_truth = str(temp['code'])
+        prediction_list.append(pred_code)
+        ground_truth_list.append(ground_truth)
+        error_list.append(calc_code_error_ratio(ground_truth, pred_code))
+    res_df = pd.DataFrame({'ground_truth': ground_truth_list, 'prediction': prediction_list, 'error': error_list},
+                          index=npz_paths)
+
+    res_df['correctly_predicted'] = res_df.error == 0
+
+    res_df['same_length'] = res_df.ground_truth.str.split(" ").apply(len) == res_df.prediction.str.split(" ").apply(len)
+    res_df['active_button_correct'] = (res_df.ground_truth.str.split('close_square_bracket', 1, expand=True).iloc[:, 0]
+                                       == res_df.prediction.str.split('close_square_bracket', 1, expand=True).iloc[:,
+                                          0])
+    res_df['button_color_correct'] = res_df.apply(lambda row: button_correct(row.ground_truth, row.prediction), axis=1)
+
+    return res_df
 
 
 def inspect_layer(model_instance, img, name, output_names):
