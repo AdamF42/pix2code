@@ -6,6 +6,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.manifold import TSNE
 from tqdm import tqdm
 
 from w2v_test.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE, PLACEHOLDER, CARRIAGE_RETURN, \
@@ -43,7 +44,7 @@ def show(image):
     cv2.destroyWindow("view")
 
 
-def get_token_sequences_with_max_seq_len(img_dir, tokens_to_exclude=TOKEN_TO_EXCLUDE):
+def get_token_sequences_with_max_seq_len(img_dir, tokens_to_exclude=TOKEN_TO_EXCLUDE, is_with_output_name=False):
     max_sentence_len = 0
     sequences = []
     for filename in os.listdir(img_dir):
@@ -51,6 +52,8 @@ def get_token_sequences_with_max_seq_len(img_dir, tokens_to_exclude=TOKEN_TO_EXC
             continue
         gui = open(f'{img_dir}/{filename}', 'r')
         token_sequences = get_token_from_gui(gui, tokens_to_exclude)
+        if is_with_output_name:
+            token_sequences = get_output_names(token_sequences)
         sequences.append(token_sequences)
     for sequence in sequences:
         if len(sequence) > max_sentence_len:
@@ -84,6 +87,13 @@ def load_pickle(pickle_path):
     file_to_load = open(pickle_path, 'rb')
     obj = pickle.load(file_to_load)
     file_to_load.close()
+    return obj
+
+
+def save_pickle(obj, pickle_path):
+    file_to_store = open(pickle_path, 'wb')
+    pickle.dump(obj, file_to_store)
+    file_to_store.close()
     return obj
 
 
@@ -138,3 +148,35 @@ def plot_cnn_history(history):
         plt.xlabel('epoch')
         plt.legend(['train', 'test'], loc='upper left')
         plt.show()
+
+
+def tsne_plot(model, path):
+    "Create TSNE model and plot it"
+    labels = []
+    tokens = []
+
+    for word in model.wv.vocab:
+        tokens.append(model.wv.__getitem__(word))
+        labels.append(word)
+
+    tsne_model = TSNE(perplexity=5, n_components=2, init='pca', n_iter=3500, random_state=23)
+    new_values = tsne_model.fit_transform(tokens)
+
+    x = []
+    y = []
+    for value in new_values:
+        x.append(value[0])
+        y.append(value[1])
+
+    plt.figure(figsize=(18, 18))
+    plt.title(path.split('/')[-1])
+    for i in range(len(x)):
+        plt.scatter(x[i], y[i])
+        plt.annotate(labels[i],
+                     xy=(x[i], y[i]),
+                     xytext=(5, 2),
+                     textcoords='offset points',
+                     ha='right',
+                     va='bottom')
+    plt.savefig(path)
+    plt.show()

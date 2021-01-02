@@ -2,7 +2,7 @@ from cnn.CnnModel import CnnModel
 from cnn.generator import DataGenerator
 from utils.utils import load_pickle, eval_cnn_model
 from w2v_test.costants import TOKEN_TO_EXCLUDE, COMMA, START_TOKEN, END_TOKEN
-from w2v_test.dataset.dataset import Dataset
+from utils.dataset import Dataset
 
 IMG_PATH = '../datasets/web/prove'
 

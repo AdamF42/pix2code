@@ -5,7 +5,7 @@ from CnnModelOriginal import CnnModelOriginal
 from generator import DataGenerator
 from utils.utils import load_pickle
 from w2v_test.costants import TOKEN_TO_EXCLUDE, END_TOKEN, START_TOKEN, COMMA
-from w2v_test.dataset.dataset import Dataset
+from utils.dataset import Dataset
 
 IMG_PATH = '../datasets/web/eval_features'
 IMG_PATH_EVAL = '../datasets/web/eval_features'
