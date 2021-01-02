@@ -140,11 +140,11 @@ class W2VCnnModel(tf.keras.models.Model):
             new_context = []
             for j in range(1, CONTEXT_LENGTH):
                 new_context.append(current_context[j])
-
+            predicted_token = voc.index_to_word(prediction)
             new_context.append(prediction)
             current_context = new_context
-            predictions.append(voc.index_to_word(prediction))
+            predictions.append(predicted_token)
 
-            if voc.index_to_word(prediction) == END_TOKEN:
+            if predicted_token == END_TOKEN:
                 break
         return predictions

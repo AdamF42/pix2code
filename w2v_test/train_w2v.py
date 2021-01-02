@@ -3,7 +3,7 @@ from gensim.models import Word2Vec
 
 from utils.costants import PLACEHOLDER
 from utils.dataset import Dataset
-from utils.utils import load_pickle
+from utils.utils import load_pickle, eval_code_error
 from w2v_test.generator.generator import DataGenerator
 from w2v_test.models.VocabularyW2V import VocabularyW2V
 from w2v_test.models.W2VCnnModel import W2VCnnModel
@@ -40,10 +40,10 @@ voc = VocabularyW2V(word_model)
 print("################################## GENERATOR ################################")
 
 # dataset = Dataset(word_model)
-labels_path, img_paths = Dataset.load_paths_only(IMG_PATH)
-labels_path_eval, img_paths_eval = Dataset.load_paths_only(IMG_PATH_EVAL)
-generator = DataGenerator(img_paths, labels_path, word_model, is_with_output_name=True)
-generator_eval = DataGenerator(img_paths_eval, labels_path_eval, word_model, is_with_output_name=True)
+# labels_path, img_paths = Dataset.load_paths_only(IMG_PATH)
+# labels_path_eval, img_paths_eval = Dataset.load_paths_only(IMG_PATH_EVAL)
+# generator = DataGenerator(img_paths, labels_path, word_model, is_with_output_name=True)
+# generator_eval = DataGenerator(img_paths_eval, labels_path_eval, word_model, is_with_output_name=True)
 
 print("################################## MODEL ################################")
 
@@ -52,12 +52,19 @@ new_model = W2VCnnModel(pretrained_weights=pretrained_weights,
                         image_count_words=voc.get_tokens(),
                         dropout_ratio=0.1)
 new_model.compile()
-img_build, _ = generator.__getitem__(0)
-# test = new_model.predict(img_build)
-code = new_model.predict_image('../datasets/web/prove/0D1C8ADB-D9F0-48EC-B5AA-205BCF96094E.png', voc,
-                               max_sentence_len)
+eval_set = '../datasets/web/prove'
+labels_path, img_paths = Dataset.load_paths_only(eval_set)
+generator = DataGenerator(img_paths, labels_path, word_model, is_with_output_name=True, batch_size=1)
 
-print(code)
+data = [(generator.__getitem__(i)[0]) for i in range(len(img_paths))]
+# test = new_model.predict(img_build)
+
+eval_code_error(new_model, data, img_paths, voc, max_sentence_len)
+
+# code = new_model.predict_image('../datasets/web/prove/0D1C8ADB-D9F0-48EC-B5AA-205BCF96094E.png', voc,
+#                                max_sentence_len)
+
+# print(code)
 
 # new_model.load_weights('../instances/pix2code_original_w2v.h5')
 
