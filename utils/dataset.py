@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 from gensim.models import Word2Vec
+from tqdm import tqdm
 
 from utils.costants import PLACEHOLDER, CONTEXT_LENGTH, IMAGE_SIZE
 from utils.utils import get_preprocessed_img, show, get_token_from_gui
@@ -24,15 +25,14 @@ class Dataset:
 
     @staticmethod
     def load_paths_only(path):
-        print("Loading paths...")
         gui_paths = []
         img_paths = []
-        for f in os.listdir(path):
+        for f in tqdm(os.listdir(path), desc="Loading paths..."):
+        # for f in os.listdir(path):
             if f.find(".gui") != -1:
                 path_gui = "{}/{}".format(path, f)
                 gui_paths.append(path_gui)
                 file_name = f[:f.find(".gui")]
-
                 if os.path.isfile("{}/{}.png".format(path, file_name)):
                     path_img = "{}/{}.png".format(path, file_name)
                     img_paths.append(path_img)

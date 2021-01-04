@@ -57,7 +57,7 @@ class DataGenerator(Sequence):
         labels = []
         # Generate data
         for i in tqdm(range(0, len(gui_paths)), desc="Creating samples"):
-            # for i in range(0, len(gui_paths)):
+        # for i in range(0, len(gui_paths)):
             img = get_preprocessed_img(img_paths[i], IMAGE_SIZE)
 
             gui = open(gui_paths[i], 'r')

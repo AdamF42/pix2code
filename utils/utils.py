@@ -189,7 +189,7 @@ def plot_cnn_history(history):
         plt.show()
 
 
-def tsne_plot(model, path):
+def tsne_plot(model, path=None):
     "Create TSNE model and plot it"
     labels = []
     tokens = []
@@ -217,5 +217,6 @@ def tsne_plot(model, path):
                      textcoords='offset points',
                      ha='right',
                      va='bottom')
-    plt.savefig(path)
+    if path:
+        plt.savefig(path)
     plt.show()
