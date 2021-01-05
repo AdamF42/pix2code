@@ -1,6 +1,7 @@
 import numpy as np
 from tensorflow.python.keras.utils.data_utils import Sequence
-
+from tqdm import tqdm
+import tensorflow as tf
 from utils.costants import BATCH_SIZE, IMAGE_SIZE
 from utils.utils import get_preprocessed_img, get_token_from_gui, get_output_names
 
@@ -9,13 +10,14 @@ class DataGenerator(Sequence):
     'Generates data for Keras'
 
     def __init__(self, img_paths, gui_paths, output_names, tokens_to_exclude,
-                 samples = None, shuffle=True, batch_size=BATCH_SIZE):
+                 samples=None, shuffle=True, code_encoder=None, batch_size=BATCH_SIZE):
         'Initialization'
         self.output_names = output_names
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.samples = samples
         self.tokens_to_exclude = tokens_to_exclude
+        self.code_encoder=code_encoder
         if samples is None:
             self.samples = self.create_samples(img_paths, gui_paths)
         self.on_epoch_end()
@@ -46,7 +48,8 @@ class DataGenerator(Sequence):
         images = []
         labels = []
         # Generate data
-        for i in range(0, len(gui_paths)):
+        for i in tqdm(range(0, len(gui_paths)), desc="Creating samples"):
+            # for i in range(0, len(gui_paths)):
             img = get_preprocessed_img(img_paths[i], IMAGE_SIZE)
 
             gui = open(gui_paths[i], 'r')
@@ -54,12 +57,16 @@ class DataGenerator(Sequence):
             token_sequence = get_output_names(token_sequence)
 
             tokens_count = {}
-            for name in self.output_names:
+            for name in get_output_names(self.output_names):
                 tokens_count[name + '_count'] = 0
 
             for token in token_sequence:
                 tokens_count[token + "_count"] = tokens_count[token + "_count"] + 1
 
+            if self.code_encoder:
+                code_array = self.code_encoder(token_sequence)
+                tokens_count.update({'code': tf.convert_to_tensor(code_array)})
+            # tokens_count.update({'code': token_sequence})
             labels.append(tokens_count)
             images.append(img)
 
@@ -84,6 +91,7 @@ class DataGenerator(Sequence):
                 if labels_dict.get(key) is None:
                     labels_dict[key] = []
                 labels_dict[key].append(val)
+                # labels_dict.update({key: val})
 
         for key in labels_dict.keys():
             labels_dict[key] = np.array(labels_dict[key])

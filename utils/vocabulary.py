@@ -6,7 +6,7 @@ class Vocabulary:
     def index_to_word(self, index):
         pass
 
-    def word_to_encode(self, word):
+    def word_to_encoding(self, word):
         pass
 
     def get_tokens(self):

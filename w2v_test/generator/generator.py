@@ -4,18 +4,19 @@ from tensorflow.python.keras.utils.data_utils import Sequence
 from tqdm import tqdm
 
 from utils.utils import get_preprocessed_img, get_token_from_gui, get_output_names
-from utils.costants import IMAGE_SIZE, CONTEXT_LENGTH, PLACEHOLDER, BATCH_SIZE
+from utils.costants import IMAGE_SIZE, PLACEHOLDER, BATCH_SIZE, CONTEXT_LENGTH
 
 
 class DataGenerator(Sequence):
     'Generates data for Keras'
 
-    def __init__(self, img_paths, gui_paths, word_model: Word2Vec, shuffle=True, batch_size=BATCH_SIZE,
-                 is_with_output_name=False):
+    def __init__(self, img_paths, gui_paths, word_model: Word2Vec, shuffle=True, max_code_len=CONTEXT_LENGTH,
+                 batch_size=BATCH_SIZE, is_with_output_name=False):
         'Initialization'
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.word_model = word_model
+        self.max_code_len=max_code_len
         self.is_with_output_name = is_with_output_name
         self.samples = self.create_samples(img_paths, gui_paths)
         self.on_epoch_end()
@@ -65,12 +66,12 @@ class DataGenerator(Sequence):
             token_sequence = get_token_from_gui(gui)
             if self.is_with_output_name:
                 token_sequence = get_output_names(token_sequence)
-            suffix = [PLACEHOLDER] * CONTEXT_LENGTH
+            suffix = [PLACEHOLDER] * self.max_code_len
 
             a = np.concatenate([suffix, token_sequence])
-            for j in range(0, len(a) - CONTEXT_LENGTH):
-                context = a[j:j + CONTEXT_LENGTH]
-                label = a[j + CONTEXT_LENGTH]  # label = name
+            for j in range(0, len(a) - self.max_code_len):
+                context = a[j:j + self.max_code_len]
+                label = a[j + self.max_code_len]  # label = name
                 encoded_label = self.word_model.wv.vocab[label].index
 
                 contexts.append(context)

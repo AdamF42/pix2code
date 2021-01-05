@@ -1,15 +1,17 @@
 import os
 import pickle
+import re
 from pathlib import Path
+from typing import Collection
 
 import cv2
 import distance
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from sklearn.manifold import TSNE
 from tqdm import tqdm
-import re
 
 from utils.costants import IMAGE_SIZE, START_TOKEN, END_TOKEN, TOKEN_TO_EXCLUDE, PLACEHOLDER, CARRIAGE_RETURN, \
     CNN_OUTPUT_NAMES
@@ -121,19 +123,20 @@ def calc_code_error_ratio(ground_truth, prediction):
 
 
 def button_correct(str1, str2):
+    # print(str1+' '+str2)
     return all(
         [[occurence.start() for occurence in re.finditer(button_name, str1)] == [occurence.start() for occurence in
                                                                                  re.finditer(button_name, str2)]
          for button_name in ['btn-green', 'btn-orange', 'btn-red']])
 
 
-def eval_code_error(model_instance, data, data_paths, voc:Vocabulary, max_sentence_len, index_value='accuracy'):
+def eval_code_error(model_instance: tf.keras.Model, data, data_paths: Collection[str], voc:Vocabulary, index_value='accuracy'):
     error_list = []
     prediction_list = []
     ground_truth_list = []
     for img, label in tqdm(data, desc="Calculating {}".format(index_value)):
-        pred_code = model_instance.predict_image(img, voc, max_sentence_len)
-        ground_truth = [voc.index_to_word(index) for index in label[-1]]
+        pred_code = model_instance.predict_image(img, voc)
+        ground_truth = [voc.index_to_word(index) for index in label]
         prediction_list.append(pred_code)
         ground_truth_list.append(ground_truth)
         error_list.append(calc_code_error_ratio(ground_truth, pred_code))

@@ -7,6 +7,7 @@ from cnn.CnnCounterUnit import CnnCounterUnit
 from cnn.CnnModel import CnnUnit
 from utils.costants import IMAGE_SIZE, CONTEXT_LENGTH, PLACEHOLDER, END_TOKEN
 from utils.utils import get_preprocessed_img
+from utils.vocabulary import Vocabulary
 
 
 class CnnImageModel(tf.keras.Model):
@@ -74,20 +75,26 @@ class CnnImageModel(tf.keras.Model):
         self.output_names = sorted(names)
         return super().compile(loss=loss, optimizer=optimizer, *args, **kwargs)
 
-    def predict_image(self, image, voc, img_size=IMAGE_SIZE, context_length=CONTEXT_LENGTH):
+    def predict_image(self, image, voc: Vocabulary, img_size=IMAGE_SIZE, context_length=CONTEXT_LENGTH):
 
-        def clean_prediction(pred, voc):
+        def clean_prediction(pred, voc: Vocabulary):
             pred_code_one_hot = pred['code'][0]
+
+            # voc.index_to_word
+
             pred_code_tokens = np.argmax(pred_code_one_hot, axis=1)
 
-            end_index = np.where(pred_code_tokens == voc.word2token_dict[END_TOKEN])
-            if len(end_index[0]) == 0:
-                end_index = np.where(pred_code_tokens == voc.word2token_dict[PLACEHOLDER])
-                if len(end_index[0]) == 0:
-                    end_index = pred_code_tokens.shape[0]
-            end_index = end_index[0][0]
-            pred_code = [voc.token2word_dict[val] for val in (pred_code_tokens[:end_index])]
-            return " ".join(pred_code)
+            predicted_tokens = [voc.index_to_word(i) for i in pred_code_tokens]
+
+            # end_index = np.where(pred_code_tokens == voc.word2token_dict[END_TOKEN])
+            # if len(end_index[0]) == 0:
+            #     end_index = np.where(pred_code_tokens == voc.word2token_dict[PLACEHOLDER])
+            #     if len(end_index[0]) == 0:
+            #         end_index = pred_code_tokens.shape[0]
+            # end_index = end_index[0][0]
+            # pred_code = [voc.token2word_dict[val] for val in (pred_code_tokens[:end_index])]
+            # return " ".join(pred_code)
+            return predicted_tokens
 
         if isinstance(image, str):
             img = get_preprocessed_img(image, img_size)
