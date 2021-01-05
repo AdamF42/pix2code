@@ -170,3 +170,7 @@ bin_old/
 w2v_test/pix2code_new_w2v/
 
 w2v_test/word2vec.model
+
+instances/
+
+pickle/
