@@ -1,3 +1,5 @@
+import pandas
+
 from cnn.CnnImageModel import CnnImageModel
 from cnn.CnnModel import CnnModel
 from cnn.CnnModelOriginal import CnnModelOriginal
@@ -5,6 +7,8 @@ from cnn.generator import DataGenerator
 from utils.utils import load_pickle, eval_cnn_model, get_output_names
 from utils.costants import TOKEN_TO_EXCLUDE, COMMA, START_TOKEN, END_TOKEN, PLACEHOLDER
 from utils.dataset import Dataset
+
+pandas.set_option("display.max_rows", None, "display.max_columns", None)
 
 IMG_PATH_TRAIN = '../datasets/web/train_features'
 IMG_PATH_TRAIN_AUGMENTED = '../datasets/web/augmented_train_features'
@@ -63,7 +67,7 @@ img_build, label = cnn_train_generator_data.__getitem__(0)
 
 new_model.predict(img_build)
 # new_model.load_weights('../instances/best_model_cnn_final.h5')
-new_model.load_weights('../instances/CnnModel.h5')
+new_model.load_weights('../instances/CnnModel4.h5')
 
 print("################################## EVAL ##################################")
 train_errors, train_y, train_predictions = eval_cnn_model(new_model, train_data, output_names)
@@ -77,4 +81,4 @@ print('VALIDATION')
 print(train_errors.head())
 train_errors, train_y, train_predictions = eval_cnn_model(new_model, test_data, output_names)
 print('TEST')
-print(train_errors.head())
+print(train_errors)
