@@ -1,6 +1,7 @@
 import os
 import pickle
 import re
+from functools import reduce
 from pathlib import Path
 from typing import Collection
 
@@ -116,41 +117,38 @@ def eval_cnn_model(model_instance, data, words_to_include, index_value='accuracy
     ratio_correct_pred = pd.DataFrame((predictions.round() == ground_truth).mean(), columns=[index_value]).T
     return ratio_correct_pred, ground_truth, predictions
 
-
 def calc_code_error_ratio(ground_truth, prediction):
     return distance.levenshtein(
-        ground_truth, prediction) / len(ground_truth)
-
+        ground_truth.split(" "), prediction.split(" ")) / len(ground_truth.split(" "))
 
 def button_correct(str1, str2):
-    # print(str1+' '+str2)
     return all(
-        [[occurence.start() for occurence in re.finditer(button_name, str1)] == [occurence.start() for occurence in
-                                                                                 re.finditer(button_name, str2)]
+        [[occurence.start() for occurence in re.finditer(button_name, str1)] ==
+         [occurence.start() for occurence in re.finditer(button_name, str2)]
          for button_name in ['btn-green', 'btn-orange', 'btn-red']])
 
+def array_to_str(array):
+    return reduce(lambda x, y: f"{x} {y}", array)
 
-def eval_code_error(model_instance: tf.keras.Model, data, data_paths: Collection[str], voc:Vocabulary, index_value='accuracy'):
+def eval_code_error(model_instance: tf.keras.Model, data, data_paths: Collection[str], voc: Vocabulary,
+                    index_value='accuracy'):
     error_list = []
     prediction_list = []
     ground_truth_list = []
     for img, label in tqdm(data, desc="Calculating {}".format(index_value)):
-        pred_code = model_instance.predict_image(img, voc)
-        ground_truth = [voc.index_to_word(index) for index in label]
+        pred_code = array_to_str(model_instance.predict_image(img, voc))
+        ground_truth = array_to_str([voc.index_to_word(index) for index in label])
         prediction_list.append(pred_code)
         ground_truth_list.append(ground_truth)
         error_list.append(calc_code_error_ratio(ground_truth, pred_code))
-    res_df = pd.DataFrame({'ground_truth': str(ground_truth_list), 'prediction': str(prediction_list), 'error': error_list},
+    res_df = pd.DataFrame({'ground_truth': ground_truth_list, 'prediction': prediction_list, 'error': error_list},
                           index=data_paths)
 
     res_df['correctly_predicted'] = res_df.error == 0
-
-    res_df['same_length'] = res_df.ground_truth.str.split(" ").apply(len) == res_df.prediction.str.split(" ").apply(len)
+    res_df['same_length'] = res_df.ground_truth.str.split(",").apply(len) == res_df.prediction.str.split(",").apply(len)
     res_df['active_button_correct'] = (res_df.ground_truth.str.split('close_bracket', 1, expand=True).iloc[:, 0]
-                                       == res_df.prediction.str.split('close_bracket', 1, expand=True).iloc[:,
-                                          0])
+                                       == res_df.prediction.str.split('close_bracket', 1, expand=True).iloc[:, 0])
     res_df['button_color_correct'] = res_df.apply(lambda row: button_correct(row.ground_truth, row.prediction), axis=1)
-
     return res_df
 
 

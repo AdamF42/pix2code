@@ -96,6 +96,7 @@ class W2VCnnModel(tf.keras.models.Model):
         if self.image_out:
             outputs.update({"img_out_" + key: layer for key, layer in zip(self.image_count_words,
                                                                           cnn_output_layers)})
+        # print(outputs)
         return outputs
 
     def compile(self, loss='sparse_categorical_crossentropy',
