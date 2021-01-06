@@ -3,22 +3,26 @@ from gensim.models import Word2Vec
 from tensorflow.python.keras.utils.data_utils import Sequence
 from tqdm import tqdm
 
-from utils.utils import get_preprocessed_img, get_token_from_gui, get_output_names
 from utils.costants import IMAGE_SIZE, PLACEHOLDER, BATCH_SIZE, CONTEXT_LENGTH
+from utils.utils import get_preprocessed_img, get_token_from_gui, get_output_names
 
 
 class DataGenerator(Sequence):
     'Generates data for Keras'
 
-    def __init__(self, img_paths, gui_paths, word_model: Word2Vec, shuffle=True, max_code_len=CONTEXT_LENGTH,
-                 batch_size=BATCH_SIZE, is_with_output_name=False):
+    def __init__(self, img_paths, gui_paths, word_model: Word2Vec, output_names, samples=None, shuffle=True, max_code_len=CONTEXT_LENGTH,
+                 batch_size=BATCH_SIZE, is_count_required=False, is_with_output_name=False):
         'Initialization'
+        self.output_names=output_names
+        self.is_count_required=is_count_required
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.word_model = word_model
         self.max_code_len=max_code_len
         self.is_with_output_name = is_with_output_name
-        self.samples = self.create_samples(img_paths, gui_paths)
+        self.samples = samples
+        if self.samples is None:
+            self.samples = self.create_samples(img_paths, gui_paths)
         self.on_epoch_end()
 
     def context_to_w2v_indexes(self, partial_sequences):
@@ -73,6 +77,16 @@ class DataGenerator(Sequence):
                 context = a[j:j + self.max_code_len]
                 label = a[j + self.max_code_len]  # label = name
                 encoded_label = self.word_model.wv.vocab[label].index
+                if self.is_count_required:
+                    tokens_count = {}
+                    for name in get_output_names(self.output_names):
+                        tokens_count[name + '_count'] = 0
+
+                    for token in token_sequence:
+                        tokens_count[token + "_count"] = tokens_count[token + "_count"] + 1
+
+                    tokens_count.update({'code': encoded_label})
+                    encoded_label = tokens_count
 
                 contexts.append(context)
                 images.append(img)

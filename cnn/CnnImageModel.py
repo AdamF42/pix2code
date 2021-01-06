@@ -41,6 +41,7 @@ class CnnImageModel(tf.keras.Model):
             Dropout(dropout_ratio, name='ordering_drop_2'),
             Dense(order_layer_output_size, activation=activation, name='ordering_3')
         ]
+
         self.code_output_units = [Dense(self.voc_size, activation='softmax', name="code_out_{}".format(i))
                                   for i in range(max_sentence_length)]
 

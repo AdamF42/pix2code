@@ -47,7 +47,6 @@ class CnnModelOriginal(tf.keras.models.Model):
 
     def call(self, inputs, **kwargs):
         inp = inputs['img_data']
-        # print(f"INPUT SHAPE: {inp.shape}")
         for layer in self.image_model_layers[:-1]:
             inp = layer(inp)
         last_layers = self.image_model_layers[-1]
@@ -61,10 +60,3 @@ class CnnModelOriginal(tf.keras.models.Model):
             metrics = ['MeanSquaredError']
         self.output_names = sorted([key + "_count" for key in self.layer_output_names])
         return super().compile(loss=loss, optimizer=optimizer, metrics=metrics, **kwargs)
-
-    def predict(self, *args, return_as_dict=True, **kwargs):
-        pred = super().predict(*args, **kwargs)
-        if return_as_dict:
-            return {key: val for key, val in zip(self.layer_output_names, pred)}
-        else:
-            return pred
