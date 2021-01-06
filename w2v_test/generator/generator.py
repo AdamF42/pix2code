@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from utils.costants import IMAGE_SIZE, PLACEHOLDER, BATCH_SIZE, CONTEXT_LENGTH
 from utils.utils import get_preprocessed_img, get_token_from_gui, get_output_names
-
+import tensorflow as tf
 
 class DataGenerator(Sequence):
     'Generates data for Keras'
@@ -105,16 +105,27 @@ class DataGenerator(Sequence):
         # Initialization
         batch_input_images = []
         batch_partial_sequences = []
-        batch_next_words = []
+        labels = []
 
         # Generate data
         for i in range(0, len(tmp_samples)):
             batch_input_images.append(tmp_samples[i]['img'])
             batch_partial_sequences.append(tmp_samples[i]['context'])
-            batch_next_words.append(tmp_samples[i]['label'])
+            labels.append(tmp_samples[i]['label'])
+
+        labels_dict = {}
+        for dict in labels:
+            for key, val in dict.items():
+                if labels_dict.get(key) is None:
+                    labels_dict[key] = []
+                labels_dict[key].append(val)
+                # labels_dict.update({key: val})
+
+        for key in labels_dict.keys():
+            labels_dict[key] = np.array(labels_dict[key])
 
         batch_input_images = np.array(batch_input_images)
         batch_partial_sequences = np.array(batch_partial_sequences)
-        batch_next_words = np.array(batch_next_words)
+        # labels = np.array(labels)
 
-        return [batch_input_images, batch_partial_sequences], batch_next_words
+        return [batch_input_images, batch_partial_sequences], labels_dict
