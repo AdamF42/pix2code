@@ -1,5 +1,7 @@
 import os
 import numpy as np
+from tqdm import tqdm
+
 from utils.utils import get_preprocessed_img, show
 from utils.costants import *
 
@@ -25,7 +27,7 @@ class Dataset:
         print("Parsing data...")
         gui_paths = []
         img_paths = []
-        for f in os.listdir(path):
+        for f in tqdm(os.listdir(path), desc="Loading paths..."):
             if f.find(".gui") != -1:
                 path_gui = "{}/{}".format(path, f)
                 gui_paths.append(path_gui)
