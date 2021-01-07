@@ -161,12 +161,7 @@ def inspect_layer(model_instance, img, name, output_names):
     n_rows = np.math.ceil(n_plots / 3)
     fig, ax = plt.subplots(n_rows, 3, figsize=(15, 5 * n_rows), squeeze=False)
 
-    # TODO: fix color
-    # print(img_data.shape)
-    # test = cv2.cvtColor(img_data, cv2.COLOR_BGR2RGB)
-    # print(test.shape)
-    test1 = cv2.imread(img_name)
-    test1 = cv2.resize(test1, (256, 256))
+    test1 = cv2.cvtColor(img_data.squeeze(), cv2.COLOR_BGR2RGB)
 
     ax[0, 0].imshow(test1)
     ax[0, 0].set_title(img_name.split('/')[-1])
