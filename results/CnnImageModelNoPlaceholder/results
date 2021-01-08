@@ -1,0 +1,18 @@
+TRAIN
+MEAN ERROR: 0.0012788857233301677
+Correct predictions: 0.9925925925925926
+same length: 1.0
+active_button_correct: 0.9962962962962963
+button_color_correct: 0.9925925925925926
+VALIDATION
+MEAN ERROR: 0.008034188034188035
+Correct predictions: 0.72
+same length: 1.0
+active_button_correct: 0.9066666666666666
+button_color_correct: 0.74
+TEST
+MEAN ERROR: 0.007076923076923078
+Correct predictions: 0.788
+same length: 1.0
+active_button_correct: 0.924
+button_color_correct: 0.804
