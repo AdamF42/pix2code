@@ -1,0 +1,18 @@
+CnnImageModelNoPlaceholderAugumented_TRAIN
+MEAN ERROR: 0.0016081038303260528
+Correct predictions: 0.9777777777777777
+same length: 1.0
+active_button_correct: 0.9814814814814815
+button_color_correct: 0.9792592592592593
+CnnImageModelNoPlaceholderAugumented_VALIDATION
+MEAN ERROR: 0.010655270655270655
+Correct predictions: 0.5533333333333333
+same length: 1.0
+active_button_correct: 0.8
+button_color_correct: 0.5866666666666667
+CnnImageModelNoPlaceholderAugumented_TEST
+MEAN ERROR: 0.009811965811965813
+Correct predictions: 0.612
+same length: 1.0
+active_button_correct: 0.828
+button_color_correct: 0.656
