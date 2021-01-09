@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from nltk.translate.bleu_score import sentence_bleu
 from sklearn.manifold import TSNE
 from tqdm import tqdm
 
@@ -89,14 +90,14 @@ def get_output_names(voc_list, out_names_dict=CNN_OUTPUT_NAMES):
     return list(map(lambda x: out_names_dict[x] if x in out_names_dict.keys() else x, voc_list))
 
 
-def load_pickle(pickle_path):
+def load_pickle(pickle_path: str) -> None:
     file_to_load = open(pickle_path, 'rb')
     obj = pickle.load(file_to_load)
     file_to_load.close()
     return obj
 
 
-def save_pickle(obj, pickle_path):
+def save_pickle(obj, pickle_path: str) -> None:
     file_to_store = open(pickle_path, 'wb')
     pickle.dump(obj, file_to_store)
     file_to_store.close()
@@ -117,9 +118,20 @@ def eval_cnn_model(model_instance, data, words_to_include, index_value='accuracy
     ratio_correct_pred = pd.DataFrame((predictions.round() == ground_truth).mean(), columns=[index_value]).T
     return ratio_correct_pred, ground_truth, predictions
 
+
 def calc_code_error_ratio(ground_truth, prediction):
     return distance.levenshtein(
         ground_truth.split(" "), prediction.split(" ")) / len(ground_truth.split(" "))
+
+
+def calc_code_bleu_score(ground_truth: str, prediction: str, ngram_number: int):
+    weights = {1: (1, 0, 0, 0),
+               2: (0, 1, 0, 0),
+               3: (0, 0, 1, 0),
+               4: (0, 0, 0, 1)}
+    return sentence_bleu(
+        [ground_truth.split(" ")], prediction.split(" "), weights=weights[ngram_number])
+
 
 def button_correct(str1, str2):
     return all(
@@ -127,25 +139,37 @@ def button_correct(str1, str2):
          [occurence.start() for occurence in re.finditer(button_name, str2)]
          for button_name in ['btn-green', 'btn-orange', 'btn-red']])
 
-def array_to_str(array):
+
+def array_to_str(array: Collection[str]) -> str:
     return reduce(lambda x, y: f"{x} {y}", array)
+
 
 def eval_code_error(model_instance: tf.keras.Model, data, data_paths: Collection[str], voc: Vocabulary,
                     index_value='accuracy'):
     error_list = []
     prediction_list = []
     ground_truth_list = []
+    bleu1_error_list = []
+    bleu2_error_list = []
+    bleu3_error_list = []
+    bleu4_error_list = []
     for img, label in tqdm(data, desc="Calculating {}".format(index_value)):
         pred_code = array_to_str(model_instance.predict_image(img, voc))
         ground_truth = array_to_str([voc.index_to_word(index) for index in label])
         prediction_list.append(pred_code)
         ground_truth_list.append(ground_truth)
         error_list.append(calc_code_error_ratio(ground_truth, pred_code))
-    res_df = pd.DataFrame({'ground_truth': ground_truth_list, 'prediction': prediction_list, 'error': error_list},
+        bleu1_error_list.append(calc_code_bleu_score(ground_truth, pred_code, 1))
+        bleu2_error_list.append(calc_code_bleu_score(ground_truth, pred_code, 2))
+        bleu3_error_list.append(calc_code_bleu_score(ground_truth, pred_code, 3))
+        bleu4_error_list.append(calc_code_bleu_score(ground_truth, pred_code, 4))
+    res_df = pd.DataFrame({'ground_truth': ground_truth_list, 'prediction': prediction_list, 'error': error_list,
+                           'bleu_1': bleu1_error_list, 'bleu_2': bleu2_error_list, 'bleu_3': bleu3_error_list,
+                           'bleu_4': bleu4_error_list},
                           index=data_paths)
 
     res_df['correctly_predicted'] = res_df.error == 0
-    res_df['same_length'] = res_df.ground_truth.str.split(",").apply(len) == res_df.prediction.str.split(",").apply(len)
+    res_df['same_length'] = res_df.ground_truth.str.split(" ").apply(len) == res_df.prediction.str.split(" ").apply(len)
     res_df['active_button_correct'] = (res_df.ground_truth.str.split('close_bracket', 1, expand=True).iloc[:, 0]
                                        == res_df.prediction.str.split('close_bracket', 1, expand=True).iloc[:, 0])
     res_df['button_color_correct'] = res_df.apply(lambda row: button_correct(row.ground_truth, row.prediction), axis=1)
