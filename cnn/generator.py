@@ -1,4 +1,5 @@
 import numpy as np
+from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.python.keras.utils.data_utils import Sequence
 from tqdm import tqdm
 import tensorflow as tf
@@ -10,7 +11,8 @@ class DataGenerator(Sequence):
     'Generates data for Keras'
 
     def __init__(self, img_paths, gui_paths, output_names, tokens_to_exclude,
-                 samples=None, shuffle=True, code_encoder=None, batch_size=BATCH_SIZE):
+                 samples=None, shuffle=True, code_encoder=None,
+                 image_transformer=None, batch_size=BATCH_SIZE):
         'Initialization'
         self.output_names = output_names
         self.shuffle = shuffle
@@ -18,6 +20,8 @@ class DataGenerator(Sequence):
         self.samples = samples
         self.tokens_to_exclude = tokens_to_exclude
         self.code_encoder=code_encoder
+        self.image_transformer = image_transformer
+
         if samples is None:
             self.samples = self.create_samples(img_paths, gui_paths)
         self.on_epoch_end()
@@ -96,6 +100,9 @@ class DataGenerator(Sequence):
         for key in labels_dict.keys():
             labels_dict[key] = np.array(labels_dict[key])
 
-        images_dict = {'img_data': np.array([img for img in images])}
+        if self.image_transformer:
+            images_dict = {'img_data': np.array([self.image_transformer.random_transform(img) for img in images])}
+        else:
+            images_dict = {'img_data': np.array([img for img in images])}
 
         return images_dict, labels_dict
