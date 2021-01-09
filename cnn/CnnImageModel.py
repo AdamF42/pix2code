@@ -24,7 +24,6 @@ class CnnImageModel(tf.keras.Model):
 
         self.voc_size = len(words)
         self.image_out = image_out
-        self.layer_output_names = words
         self.image_count_words = image_count_words
         self.max_sentence_length = max_sentence_length
 
