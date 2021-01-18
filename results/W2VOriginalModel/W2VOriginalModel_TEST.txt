@@ -1,0 +1,10 @@
+W2VOriginalModel_TEST
+MEAN ERROR: 0.08603048709821505
+Correct predictions: 0.004
+same length: 0.948
+active_button_correct: 0.472
+button_color_correct: 0.012
+bleu_1: 0.9461056264421206
+bleu_2: 0.8880389616387583
+bleu_3: 0.8240478809388487
+bleu_4: 0.7475898116162584
