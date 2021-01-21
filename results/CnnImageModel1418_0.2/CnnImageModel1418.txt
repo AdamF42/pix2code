@@ -1,0 +1,32 @@
+CnnImageModel1418_TRAIN
+MEAN ERROR: 0.0039442861665083895
+Correct predictions: 0.7451851851851852
+same length: 1.0
+active_button_correct: 0.7451851851851852
+button_color_correct: 0.8044444444444444
+bleu_1: 0.9976005064893955
+bleu_2: 0.9944891443167304
+bleu_3: 0.9921159420289856
+bleu_4: 0.9886809616634178
+CnnImageModel1418_VALIDATION
+MEAN ERROR: 0.016353276353276353
+Correct predictions: 0.21333333333333335
+same length: 1.0
+active_button_correct: 0.21333333333333335
+button_color_correct: 0.46
+bleu_1: 0.993048433048433
+bleu_2: 0.9782183908045977
+bleu_3: 0.9657391304347827
+bleu_4: 0.9508771929824562
+CnnImageModel1418_TEST
+MEAN ERROR: 0.018222222222222223
+Correct predictions: 0.152
+same length: 1.0
+active_button_correct: 0.152
+button_color_correct: 0.416
+bleu_1: 0.9915897435897435
+bleu_2: 0.9764137931034481
+bleu_3: 0.9641391304347826
+bleu_4: 0.9488771929824562
+
+Process finished with exit code 0
