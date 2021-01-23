@@ -1,0 +1,10 @@
+W2VCnnModel1418_48_TEST
+MEAN ERROR: 0.08664425585351757
+Correct predictions: 0.016
+same length: 0.848
+active_button_correct: 0.288
+button_color_correct: 0.076
+bleu_1: 0.9503444075429539
+bleu_2: 0.906697721590383
+bleu_3: 0.8625091358898498
+bleu_4: 0.8091726289677432
