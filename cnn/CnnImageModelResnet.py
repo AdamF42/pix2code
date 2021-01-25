@@ -103,5 +103,5 @@ class CnnImageModelResnet(tf.keras.Model):
         else:
             raise TypeError("Unknown handling of image input of type {}".format(type(image)))
 
-        pred = self.predict({'img_data': np.expand_dims(img, 0)})
+        pred = self.predict({'img_data': img})
         return clean_prediction(pred, voc)
